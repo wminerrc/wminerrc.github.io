@@ -125,7 +125,7 @@ const template = `
                 {{#spendTable}}
                     {{#mkt_table}}
                         <tr>
-                            <td style="text-align: center;">\${{investment}},00</td>
+                            <td style="text-align: center;">\${{spend.price_to_pay_in_dols}}</td>
                             <td style="text-align: center;">{{converted_rlt}} rlt</td>
                             <td style="text-align: center;">{{spend.rlt_to_spend}} rlt</td>
                             <td style="text-align: center;">{{spend.fee}} rlt</td>
@@ -168,7 +168,7 @@ const template = `
             {{#spendTable}}
                 {{#loot_table}}
                     <tr>
-                        <td style="text-align: center;">\${{investment}},00</td>
+                        <td style="text-align: center;">\${{spend.price_to_pay_in_dols}}</td>
                         <td style="text-align: center;">{{converted_rlt}} rlt</td>
                         {{#spend.per_box}}
                             <td style="text-align: center;">{{count}} boxes</td>
