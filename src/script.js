@@ -109,14 +109,15 @@ const template = `
     <table class="rewards">
             <thead>
                 <tr id="export_mktplace" class="export">
-                    <th colspan="4" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
+                    <th colspan="5" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
                 </tr>
                 <tr>
-                    <th colspan="4" style="text-align: center;">Investment table (Marketplace)</th>
+                    <th colspan="5" style="text-align: center;">Investment table (Marketplace)</th>
                 </tr>
                 <tr>
                     <th style="text-align: center;"><i class="fa fa-usd" aria-hidden="true"></i></th>
                     <th style="text-align: center;">BALANCE ({{bestDiscount}}% OFF)</th>
+                    <th style="text-align: center;">MULTIPLIER</th>
                     <th style="text-align: center;">TRADE <i class="fa fa-money" aria-hidden="true"></i> <i class="fa fa-exchange" aria-hidden="true"></i> <i class="fa fa-money" aria-hidden="true"></i></th>
                     <th style="text-align: center;">FEE <i class="fa fa-university" aria-hidden="true"></i></th>
                 </tr>
@@ -127,6 +128,7 @@ const template = `
                         <tr>
                             <td style="text-align: center;">\${{spend.price_to_pay_in_dols}}</td>
                             <td style="text-align: center;">{{converted_rlt}} rlt</td>
+                            <td style="text-align: center;">{{spend.tot_multiplier}}x</td>
                             <td style="text-align: center;">{{spend.rlt_to_spend}} rlt</td>
                             <td style="text-align: center;">{{spend.fee}} rlt</td>
                         </tr>
@@ -140,14 +142,15 @@ const template = `
     <table class="rewards">
         <thead>
             <tr id="export_loot" class="export">
-                <th colspan="11" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
+                <th colspan="12" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
             </tr>
             <tr>
-                <th colspan="11" style="text-align: center;">Investment table (Lootbox)</th>
+                <th colspan="12" style="text-align: center;">Investment table (Lootbox)</th>
             </tr>
             <tr>
                 <th rowspan="2" style="text-align: center;"><i class="fa fa-usd" aria-hidden="true"></th>
                 <th rowspan="2" style="text-align: center;">BALANCE ({{bestDiscount}}% OFF)</th>
+                <th rowspan="2" style="text-align: center;">MULTIPLIER</th>
                 <th colspan="3" style="text-align: center;">BOX 5 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
                 <th colspan="3" style="text-align: center;">BOX 10 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
                 <th colspan="3" style="text-align: center;">BOX 25 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
@@ -170,6 +173,7 @@ const template = `
                     <tr>
                         <td style="text-align: center;">\${{spend.price_to_pay_in_dols}}</td>
                         <td style="text-align: center;">{{converted_rlt}} rlt</td>
+                        <td style="text-align: center;">{{spend.tot_multiplier}}x</td>
                         {{#spend.per_box}}
                             <td style="text-align: center;">{{count}} boxes</td>
                             <td style="text-align: center;">{{max_rlt_to_lose}} rlt</td>
