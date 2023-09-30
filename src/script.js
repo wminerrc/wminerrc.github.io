@@ -105,6 +105,51 @@ const template = `
     </table>
     </div>
 
+    <div id="merge_div">
+    <table class="rewards">
+            <thead>
+                <tr id="export_merge" class="export">
+                    <th colspan="12" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
+                </tr>
+                <tr>
+                    <th colspan="12" style="text-align: center;">Merges</th>
+                </tr>
+                <tr>
+                    <th style="text-align: center;">Reward</th>
+                    <th style="text-align: center;">Image</th>
+                    <th style="text-align: center;"><i style="color: rgb(43, 214, 0);" class="fa fa-wrench" aria-hidden="true"> II</i></th>
+                    <th style="text-align: center;"><i style="color: rgb(3, 225, 228);" class="fa fa-wrench" aria-hidden="true"> III</i></th>
+                    <th style="text-align: center;"><i style="color: rgb(255, 47, 209);" class="fa fa-wrench" aria-hidden="true"> IV</i></th>
+                    <th style="text-align: center;"><i style="color: rgb(255, 220, 0);" class="fa fa-wrench" aria-hidden="true"> V</i></th>
+                    <th style="text-align: center;"><i style="color: rgb(235, 0, 0);;" class="fa fa-wrench" aria-hidden="true"> VI</i></th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {{#mergeTable}}
+                        <tr>
+                            <td>{{label}}</td>
+                            <td style="text-align: center; position: relative;">
+                                <img src='{{image_content}}' width="80px" height="auto"/>
+                            </td>
+                            {{#merge_recipes}}
+                            <td>
+                                <img src="images/basic_miner.svg" width="16" height="16"> {{tot_miners}}<br/>
+                                <img src="images/{{level}}/fan.png" width="16" height="16"> {{tot_fan}}<br/>
+                                <img src="images/{{level}}/wire.png" width="16" height="16"> {{tot_wire}}<br/>
+                                <img src="images/{{level}}/hash.png" width="16" height="16"> {{tot_hash}}<br/>
+                                <img src="images/rlt.svg" width="16" height="16"> {{rlt_price}}<br/>
+                                <img src="images/bonus.svg" width="16" height="16"/><span style="color:#276e6f;font-weight:bold"> {{new_bonus}}%</span><br/>
+                                <img src="images/power.svg" width="16" height="16"/> {{new_power}} Ghs
+                            </td>
+                            {{/merge_recipes}}
+                        </tr>
+                {{/mergeTable}}
+            </tbody>
+    </table>
+    </div>
+    
+
     <div id="mktplace_div">
     <table class="rewards">
             <thead>
@@ -200,6 +245,16 @@ window.onload = () => {
             backgroundColor: null
         }).then(function(canvas) {
             saveAs(canvas.toDataURL(), event.eventName.replace(/ /g,'').toLowerCase() + '-reward-table.png');
+        });
+    });
+    
+    document.getElementById("export_merge").addEventListener("click", function() {
+        html2canvas(document.getElementById("merge_div"), {
+            allowTaint: true,
+            useCORS: true,
+            backgroundColor: null
+        }).then(function(canvas) {
+            saveAs(canvas.toDataURL(), event.eventName.replace(/ /g,'').toLowerCase() + '-merge-table.png');
         });
     });
 
