@@ -143,6 +143,9 @@ const template = `
                                 <img src="images/power.svg" width="16" height="16"/> {{new_power}} Ghs
                             </td>
                             {{/merge_recipes}}
+                            {{^merge_recipes.length}}
+                                <td colspan="5" style="text-align: center;">No merge available</td>
+                            {{/merge_recipes.length}}
                         </tr>
                 {{/mergeTable}}
             </tbody>
