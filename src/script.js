@@ -233,6 +233,12 @@ const template = `
         </tbody>
     </table>
     </div>
+    <div id="balao">
+        <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
+        <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
+        <p>Ajude o canal e ainda participe de sorteios insanos!</p>
+        <a href="https://forms.gle/HxrjqrbAUsu6GikA9" target="_blank">Acessar o form</a>
+    </div>
 `
 
 var output = Mustache.render(template, event);
@@ -280,6 +286,10 @@ window.onload = () => {
             saveAs(canvas.toDataURL(), event.eventName.replace(/ /g,'').toLowerCase() + '-loot-table.png');
         });
     });
+
+    setTimeout(function() {
+        balao.style.display = "block";
+      }, 2000);
     
 
     
