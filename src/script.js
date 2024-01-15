@@ -190,29 +190,41 @@ const template = `
     <table class="rewards">
         <thead>
             <tr id="export_loot" class="export">
-                <th colspan="12" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
+                <th colspan="21" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
             </tr>
             <tr>
-                <th colspan="12" style="text-align: center;">Investment table (Lootbox)</th>
+                <th colspan="21" style="text-align: center;">Investment table (Lootbox)</th>
             </tr>
             <tr>
                 <th rowspan="2" style="text-align: center;"><i class="fa fa-usd" aria-hidden="true"></th>
                 <th rowspan="2" style="text-align: center;">BALANCE ({{bestDiscount}}% OFF)</th>
                 <th rowspan="2" style="text-align: center;">MULTIPLIER</th>
-                <th colspan="3" style="text-align: center;">BOX 5 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
-                <th colspan="3" style="text-align: center;">BOX 10 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
-                <th colspan="3" style="text-align: center;">BOX 25 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-3" colspan="3" style="text-align: center;">BOX 3 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-5" colspan="3" style="text-align: center;">BOX 5 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-12" colspan="3" style="text-align: center;">BOX 12 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-30" colspan="3" style="text-align: center;">BOX 30 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-70" colspan="3" style="text-align: center;">BOX 70 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
+                <th class="lootbox-120" colspan="3" style="text-align: center;">BOX 120 <i class="fa fa-dropbox" aria-hidden="true"></i></th>
             </tr>
             <tr>
-                <th style="text-align: center;">UNITS</th>
-                <th style="text-align: center;">MAX LOSS</th>
-                <th style="text-align: center;">AVG LOSS</th>
-                <th style="text-align: center;">UNITS</th>
-                <th style="text-align: center;">MAX LOSS</th>
-                <th style="text-align: center;">AVG LOSS</th>
-                <th style="text-align: center;">UNITS</th>
-                <th style="text-align: center;">MAX LOSS</th>
-                <th style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-3" style="text-align: center;">UNITS</th>
+                <th class="lootbox-3" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-3" style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-5" style="text-align: center;">UNITS</th>
+                <th class="lootbox-5" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-5" style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-12" style="text-align: center;">UNITS</th>
+                <th class="lootbox-12" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-12" style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-30" style="text-align: center;">UNITS</th>
+                <th class="lootbox-30" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-30" style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-70" style="text-align: center;">UNITS</th>
+                <th class="lootbox-70" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-70" style="text-align: center;">AVG LOSS</th>
+                <th class="lootbox-120" style="text-align: center;">UNITS</th>
+                <th class="lootbox-120" style="text-align: center;">MAX LOSS</th>
+                <th class="lootbox-120" style="text-align: center;">AVG LOSS</th>
             <tr/>
         </thead>
         <tbody>
@@ -223,9 +235,9 @@ const template = `
                         <td style="text-align: center;">{{converted_rlt}} rlt</td>
                         <td style="text-align: center;">{{spend.tot_multiplier}}x</td>
                         {{#spend.per_box}}
-                            <td style="text-align: center;">{{count}} boxes</td>
-                            <td style="text-align: center;">{{max_rlt_to_lose}} rlt</td>
-                            <td style="text-align: center;">{{avg_rlt_to_lose}} rlt</td>
+                            <td class="lootbox-{{box}}" style="text-align: center;">{{count}} boxes</td>
+                            <td class="lootbox-{{box}}" style="text-align: center;">{{max_rlt_to_lose}} rlt</td>
+                            <td class="lootbox-{{box}}" style="text-align: center;">{{avg_rlt_to_lose}} rlt</td>
                         {{/spend.per_box}}
                     </tr>
                 {{/loot_table}}
@@ -237,7 +249,7 @@ const template = `
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
         <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
         <p>Ajude o canal e ainda participe de sorteios insanos!</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSd20oCkYlxdFh86ZPqmOZiPXaghDW3LmG8__Wj4FOfOrsr3zQ/viewform?usp=send_form" target="_blank">Acessar o form</a>
+        <a href="https://forms.gle/4y6LZDQ6eLgd33MQ8" target="_blank">Acessar o form</a>
     </div>
 `
 

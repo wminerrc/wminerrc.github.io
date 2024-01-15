@@ -69,3 +69,27 @@ top: 5px;
 right: 10px;
 cursor: pointer;
 }
+
+.lootbox-3 {
+    background-color:rgba(250, 149, 122,0.5) !important;
+}
+
+.lootbox-5 {
+    background-color:rgba(157, 70, 60,0.5) !important;
+}
+
+.lootbox-12 {
+    background-color:rgba(94, 179, 224, 0.5) !important;
+}
+
+.lootbox-30 {
+    background-color:rgba(47, 125, 125, 0.5) !important;
+}
+
+.lootbox-70 {
+    background-color:rgba(245, 209, 32, 0.5) !important;
+}
+
+.lootbox-120 {
+    background-color:rgba(236, 159, 61, 0.5) !important;
+}
