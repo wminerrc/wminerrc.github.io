@@ -249,7 +249,9 @@ const template = `
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
         <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
         <p>Ajude o canal e ainda participe de sorteios insanos!</p>
-        <a href="https://forms.gle/jPC4QfZ7zrEovWQq8" target="_blank">Acessar o form</a>
+        <a href="https://forms.gle/NAEM9CHcCE8qmG8e6" target="_blank">Acessar o form de ETH</a>
+        <a href="https://forms.gle/ttzwdQpNB8UGioMG9" target="_blank">Acessar o form de BTC</a>
+        
     </div>
 `
 
