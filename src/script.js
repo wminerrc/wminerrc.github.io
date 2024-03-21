@@ -249,7 +249,7 @@ const template = `
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
         <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
         <p>Ajude o canal e ainda participe de sorteios insanos!!</p>
-        <a href="https://forms.gle/cqe66AZGt683bomh7" target="_blank">Acessar o form</a>
+        <a href="https://forms.gle/cpfCtu8TQ2BfkACv6" target="_blank">Acessar o form</a>
         
     </div>
 `
