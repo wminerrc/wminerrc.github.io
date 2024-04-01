@@ -249,8 +249,7 @@ const template = `
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
         <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
         <p>Ajude o canal e ainda participe de sorteios insanos!!</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeKfs6dG_DSFj37jtDcFD0-ekua2A4L6_qWkj3rkwgI0Kh9MA/viewform" target="_blank">Acessar o form</a>
-        
+        <a href="https://forms.gle/n6PdAQTvDfBmNVAn8" target="_blank">Acessar o form</a>
     </div>
 `
 
