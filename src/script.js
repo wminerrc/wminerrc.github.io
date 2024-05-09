@@ -21,7 +21,7 @@ const template = `
     <table class="rewards">
         <thead>
             <tr>
-                <th id="banner" onclick="window.open('https://www.youtube.com/@wminer', '_blank')" colspan="6" style="
+                <th id="banner" onclick="window.open('https://doar.acnur.org/page/ACNURBR/doe/enchentes-no-sul-do-brasil', '_blank')" colspan="6" style="
                     height: 50px;
                     position: -webkit-sticky;
                     position: sticky;
@@ -31,7 +31,9 @@ const template = `
                     background-color: #ef4e4e;
                     font-size: 40px;
                     text-align: center;
-                ">INSCREVA-SE NO CANAL<i class="fa fa-youtube-play" style="font-size: 48px;color: white;float: right;"></i></th>
+                ">AJUDE O RIO GRANDE DO SUL
+                <img src="images/rs.png" style="height: 100%;float: right;">
+                </th>
             </tr>
             <tr id="export_rewards" class="export">
                 <th colspan="6" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
@@ -248,8 +250,8 @@ const template = `
     <div id="balao">
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
         <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
-        <p>Ajude o canal e ainda participe de sorteios insanos!!</p>
-        <a href="https://forms.gle/7Voqfzghj28GUshL9" target="_blank">Acessar o form</a>
+        <p>Toda a comissao deste formulario vai ser direcionada para as vitimas dos desastres no Rio Grande do Sul</p>
+        <a href="https://forms.gle/886wfgcWW4t3FahEA" target="_blank">Acessar o form</a>
     </div>
 `
 
