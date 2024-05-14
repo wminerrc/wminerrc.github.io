@@ -21,7 +21,7 @@ const template = `
     <table class="rewards">
         <thead>
             <tr>
-                <th id="banner" onclick="window.open('https://doar.acnur.org/page/ACNURBR/doe/enchentes-no-sul-do-brasil', '_blank')" colspan="6" style="
+                 <th id="banner" onclick="window.open('https://www.youtube.com/@wminer', '_blank')" colspan="6" style="
                     height: 50px;
                     position: -webkit-sticky;
                     position: sticky;
@@ -31,9 +31,7 @@ const template = `
                     background-color: #ef4e4e;
                     font-size: 40px;
                     text-align: center;
-                ">AJUDE O RIO GRANDE DO SUL
-                <img src="images/rs.png" style="height: 100%;float: right;">
-                </th>
+                ">INSCREVA-SE NO CANAL<i class="fa fa-youtube-play" style="font-size: 48px;color: white;float: right;"></i></th>
             </tr>
             <tr id="export_rewards" class="export">
                 <th colspan="6" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
@@ -249,15 +247,32 @@ const template = `
     </div>
     <div id="balao">
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
-        <p>{{bestDiscount}}% de desconto! Preencha o nosso form.</p>
-        <p>Toda a comissao deste formulario vai ser direcionada para as vitimas dos desastres no Rio Grande do Sul</p>
-        <a href="https://forms.gle/886wfgcWW4t3FahEA" target="_blank">Acessar o form</a>
+        <p>{{bestDiscount}}% de desconto! Infelizmente os formularios estao temporariamente descontinuados.</p>
+        <p>Lembre-se que o rollercoin eh um jogo, e se possivel movimente-se para ajudar os criadores de conteudo BR <3</p>
+        <a>Ate a proxima :(</a>
     </div>
+    <audio id="background-music" src="/love_by_grace.mp3" autoplay loop></audio>
 `
 
 var output = Mustache.render(template, event);
 
 window.onload = () => { 
+
+    function createRaindrop() {
+        const raindrop = document.createElement('div');
+        raindrop.className = 'raindrop';
+        raindrop.style.left = `${Math.random() * 100}vw`;
+        raindrop.style.animationDuration = `${Math.random() * 2 + 2}s`; // Entre 2 e 4 segundos
+        document.body.appendChild(raindrop);
+
+        // Remove a gota após a animação
+        raindrop.addEventListener('animationend', () => {
+            raindrop.remove();
+        });
+    }
+
+    // Cria novas gotas de chuva continuamente
+    setInterval(createRaindrop, 100);
     
     document.getElementById('content').innerHTML = output;
 
