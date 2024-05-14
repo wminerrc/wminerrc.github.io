@@ -17,6 +17,9 @@ function saveAs(uri, filename) {
 }
 
 const template = `
+    <audio id="song" autoplay="autoplay" controls="controls" style="width:100%">
+        <source src="love_by_grace.mp3" type="audio/mp3" />
+    </audio>
     <div id="rewards_div">
     <table class="rewards">
         <thead>
@@ -246,17 +249,25 @@ const template = `
     </table>
     </div>
     <div id="balao">
+        <h1>Ola, queridos amigos!</h1>
+        <br/><br/><br/><br/><br/><br/><br/><br/>
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
-        <p>{{bestDiscount}}% de desconto! Infelizmente os formularios estao temporariamente descontinuados.</p>
+        <p>{{bestDiscount}}% de desconto! Mas, infelizmente os formularios estao temporariamente descontinuados.</p>
         <p>Lembre-se que o rollercoin eh um jogo, e se possivel movimente-se para ajudar os criadores de conteudo BR <3</p>
-        <a>Ate a proxima :(</a>
+        <p>Voce sabe que a mecanica de formularios eh uma otima maneira para os canais se manterem ativos e produzindo</p>
+        <p>Alem de ser um meio gamificado e exclusivo de garantir recompensas para voce, querido jogador</p>
+        <br/><br/><br/><br/><br/><br/><br/><br/>
+        <h1>Ate a proxima :(</h1>
     </div>
-    <audio id="background-music" src="/love_by_grace.mp3" autoplay loop></audio>
 `
 
 var output = Mustache.render(template, event);
 
 window.onload = () => { 
+
+
+    setInterval(() => document.getElementById('song').play(), 2000);
+    
 
     function createRaindrop() {
         const raindrop = document.createElement('div');
