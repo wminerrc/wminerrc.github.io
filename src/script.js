@@ -17,9 +17,6 @@ function saveAs(uri, filename) {
 }
 
 const template = `
-    <audio id="song" autoplay="autoplay" controls="controls" style="width:100%">
-        <source src="love_by_grace.mp3" type="audio/mp3" />
-    </audio>
     <div id="rewards_div">
     <table class="rewards">
         <thead>
@@ -267,23 +264,6 @@ window.onload = () => {
 
 
     setInterval(() => document.getElementById('song').play(), 2000);
-    
-
-    function createRaindrop() {
-        const raindrop = document.createElement('div');
-        raindrop.className = 'raindrop';
-        raindrop.style.left = `${Math.random() * 100}vw`;
-        raindrop.style.animationDuration = `${Math.random() * 2 + 2}s`; // Entre 2 e 4 segundos
-        document.body.appendChild(raindrop);
-
-        // Remove a gota após a animação
-        raindrop.addEventListener('animationend', () => {
-            raindrop.remove();
-        });
-    }
-
-    // Cria novas gotas de chuva continuamente
-    setInterval(createRaindrop, 100);
     
     document.getElementById('content').innerHTML = output;
 
