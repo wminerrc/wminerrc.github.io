@@ -88,7 +88,6 @@ angular.module('miningApp')
     };
 
     var getBlockSizeByCurrency = async function(currency) {
-        await delay(1500);
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=block_reward`;
         return $http.get(`https://rollercoin.free.mockoapp.net/get?url=${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
@@ -99,7 +98,6 @@ angular.module('miningApp')
     };
 
     var getNetworkPowerByCurrency = async function(currency) {
-        await delay(1500);
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=total_power`;
         return $http.get(`https://rollercoin.free.mockoapp.net/get?url=${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
@@ -110,7 +108,6 @@ angular.module('miningApp')
     };
 
     var getBlockTimeByCurrency = async function(currency) {
-        await delay(1500);
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=duration`;
         return $http.get(`https://rollercoin.free.mockoapp.net/get?url=${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
@@ -130,12 +127,12 @@ angular.module('miningApp')
         const currencies = await getCurrencies();
         const detailedCurrencies = [];
         for (const currency of currencies) {
-            const [blockSize, networkPower, blockTime] = await Promise.all([
-                getBlockSizeByCurrency(currency.balance_key),
-                getNetworkPowerByCurrency(currency.balance_key),
-                getBlockTimeByCurrency(currency.balance_key)
-            ]);
-            currency.values = [blockSize, networkPower, blockTime];
+            var blockSize = await getBlockSizeByCurrency(currency.balance_key);
+            await delay(1500);
+            var networkPower = await getNetworkPowerByCurrency(currency.balance_key);
+            await delay(1500);
+            var blockTime = await getBlockTimeByCurrency(currency.balance_key);
+            await delay(1500);
             currency.blockSize = (blockSize/currency.divider) / currency.to_small;
             currency.networkPower = networkPower;
             currency.blockTime = blockTime;

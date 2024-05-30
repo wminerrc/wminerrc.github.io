@@ -55,6 +55,11 @@ angular.module('miningApp', [])
         $scope.formData.blockTime = convertTime($scope.formData.blockTime, oldUnit, $scope.formData.timeUnit);
     };
 
+    $scope.resetValues = function() {
+        localStorage.clear();
+        location.reload();
+    }
+
     $scope.updateCurrencyDetails = function() {
         const selectedCurrency = $scope.formData.currency;
         if (selectedCurrency) {
