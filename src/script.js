@@ -16,6 +16,31 @@ function saveAs(uri, filename) {
     }
 }
 
+function convertHashrate(ghs) {
+    const ghsToPhs = 1e6;
+    const ghsToEhs = 1e9;
+
+    let result;
+
+    if (ghs >= ghsToEhs) {
+        const ehs = ghs / ghsToEhs;
+        result = `${ehs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EH/s`;
+    } else if (ghs >= ghsToPhs) {
+        const phs = ghs / ghsToPhs;
+        result = `${phs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} PH/s`;
+    } else {
+        result = `${ghs.toLocaleString('en-US')} GH/s`;
+    }
+    return result;
+}
+
+event.convertHashrate = function() {
+    return (text, render) => {
+        const ghs = parseInt(render(text), 10);
+        return convertHashrate(ghs);
+    }
+};
+
 const template = `
     <div id="rewards_div">
     <table class="rewards">
@@ -34,10 +59,10 @@ const template = `
                 ">INSCREVA-SE NO CANAL<i class="fa fa-youtube-play" style="font-size: 48px;color: white;float: right;"></i></th>
             </tr>
             <tr id="export_rewards" class="export">
-                <th colspan="6" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
+                <th colspan="5" style="text-align: right;">Save as image <i class="fa fa-floppy-o" aria-hidden="true"></i></th>
             </tr>
             <tr>
-                <th colspan="6" style="text-align: center;">{{eventName}}</th>
+                <th colspan="5" style="text-align: center;">{{eventName}}</th>
             </tr>
             <tr>
                 <th style="text-align: center;">LVL</th>
@@ -45,7 +70,6 @@ const template = `
                 <th style="text-align: center;">XP</th>
                 <th style="text-align: center;">Reward</th>
                 <th style="text-align: center;">Image</th>
-                <th style="text-align: center;"><i class="fa fa-shopping-cart" aria-hidden="true"></i></th>
             </tr>
         </thead>
         <tbody>
@@ -55,18 +79,22 @@ const template = `
                     <td style="text-align: center;">{{total}}</td>
                     <td style="text-align: center;">{{xp}}</td>
                     <td>{{label}}</td>
-                    <td style="text-align: center; display: flex; position: relative;">
+                    <td style="text-align: center; position: relative;">
                     {{#image_lvl_content}}
                         <img src='{{image_lvl_content}}' style='left: 2px;position: absolute;top: 25px;'/>
                     {{/image_lvl_content}}
                     <img src='{{image_content}}' width="80px" height="auto"/>
-                    </td>
-                    {{#can_be_sold}}
-                        <td style="text-align: center;"><i class="fa fa-check" aria-hidden="true"></i></td>
-                    {{/can_be_sold}}
                     {{^can_be_sold}}
-                        <td style="text-align: center;"><i class="fa fa-times" aria-hidden="true"></i></td>
+                        <div style="
+                            height: 10px;
+                            width: 100px;
+                            background-color: red;
+                            font-size: 0.6em;
+                            font-weight: bold;
+                            color: white;
+                        ">CAN'T BE SOLD</div>
                     {{/can_be_sold}}
+                    </td>
                 </tr>
             {{/rewards}}
                 <tr>
@@ -79,7 +107,7 @@ const template = `
                 </tr>
                 <tr>
                     <td colspan="4" style="text-align: right;">TOTAL POWER</td>
-                    <td colspan="2" style="text-align: center;">{{summary.total_power}} ghs</td>
+                    <td colspan="2" style="text-align: center;">{{#convertHashrate}}{{summary.total_power}}{{/convertHashrate}}</td>
                 </tr>
                 <tr>
                     <td colspan="4" style="text-align: right;">TOTAL RACKS</td>
@@ -140,7 +168,7 @@ const template = `
                                 <img src="images/{{level}}/hash.png" width="16" height="16"> {{tot_hash}}<br/>
                                 <img src="images/rlt.svg" width="16" height="16"> {{rlt_price}}<br/>
                                 <img src="images/bonus.svg" width="16" height="16"/><span style="color:#276e6f;font-weight:bold"> {{new_bonus}}%</span><br/>
-                                <img src="images/power.svg" width="16" height="16"/> {{new_power}} Ghs
+                                <img src="images/power.svg" width="16" height="16"/> {{#convertHashrate}}{{new_power}}{{/convertHashrate}}
                             </td>
                             {{/merge_recipes}}
                             {{^merge_recipes.length}}
@@ -307,9 +335,9 @@ window.onload = () => {
         });
     });
 
-    setTimeout(function() {
+    /*setTimeout(function() {
         balao.style.display = "block";
-      }, 2000);
+      }, 2000);*/
     
 
     
