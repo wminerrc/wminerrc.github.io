@@ -24,10 +24,10 @@ function convertHashrate(ghs) {
 
     if (ghs >= ghsToEhs) {
         const ehs = ghs / ghsToEhs;
-        result = `${ehs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EH/s`;
+        result = `${ehs.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} EH/s`;
     } else if (ghs >= ghsToPhs) {
         const phs = ghs / ghsToPhs;
-        result = `${phs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} PH/s`;
+        result = `${phs.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} PH/s`;
     } else {
         result = `${ghs.toLocaleString('en-US')} GH/s`;
     }
