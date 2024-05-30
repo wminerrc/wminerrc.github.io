@@ -56,8 +56,10 @@ angular.module('miningApp', [])
     };
 
     $scope.resetValues = function() {
-        localStorage.clear();
-        location.reload();
+        if(confirm("Isso irá recarregar todos os valores de poder de rede e cotação e demorará algum tempo. Tem certeza?")) {
+            localStorage.clear();
+            location.reload();  
+        }
     }
 
     $scope.updateCurrencyDetails = function() {
