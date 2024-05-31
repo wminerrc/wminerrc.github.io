@@ -14,6 +14,8 @@ angular.module('miningApp', [])
     };
     $scope.formData = default_form;
     $scope.isLoading = true;
+    $scope.orderByField = 'block_value_in_usd';
+    $scope.reverseSort = true;
     const exchangeRates = await CurrencyService.getCurrenciesPrices();
     $scope.exchangeRates = exchangeRates;
 
@@ -28,6 +30,40 @@ angular.module('miningApp', [])
         return value * units[fromUnit] / units[toUnit];
     };
 
+    const chooseBestHashRateUnit = (value, fromUnit) => {
+       const units = $scope.networkUnits.slice();
+       do{
+            let unit =  units.pop();
+            let converted_value = convertHashrate(value, fromUnit, unit);
+            if(converted_value > 1) {
+                return {value: converted_value, unit: unit};
+            }
+       }while(units.length);
+       return {value: value, unit: fromUnit};
+    };
+
+    const exchangeCoin = (value, coin, currency) => {
+        return parseFloat((value * exchangeRates[coin][currency]).toFixed(2));
+    };
+
+
+    $scope.$watch('formData.power', function(newvalue) {
+        if(!$scope.formData.currency && typeof newvalue !== 'undefined') {
+            $scope.currencies.forEach(c => {
+                c.user_block_farm_brl =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'brl');
+                c.user_block_farm_usd =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'usd');
+                c.user_block_farm_token =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'amount');
+            });
+            if(newvalue > 0) {
+                $scope.orderByField = 'user_block_farm_usd';
+            }else {
+                $scope.orderByField = 'block_value_in_usd';
+            }
+        }
+    });
+
+    $scope.chooseBestHashRateUnit = chooseBestHashRateUnit;
+
     const convertTime = (value, fromUnit, toUnit) => {
   
         if (fromUnit === 'minutes' && toUnit === 'seconds') {
@@ -40,6 +76,13 @@ angular.module('miningApp', [])
     };
 
     $scope.currencies = await CurrencyService.getDetailedCurrencies();
+    $scope.currencies.forEach(c => {
+        c.block_value_in_brl = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'brl');
+        c.block_value_in_usd = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'usd');
+        c.user_block_farm_brl = 0;
+        c.user_block_farm_usd = 0;
+        c.user_block_farm_token = 0;
+    });
     $scope.isLoading = false;
     $scope.$apply();
 
@@ -65,20 +108,26 @@ angular.module('miningApp', [])
     $scope.updateCurrencyDetails = function() {
         const selectedCurrency = $scope.formData.currency;
         if (selectedCurrency) {
-            $scope.formData.networkPower = selectedCurrency.networkPower;
-            $scope.formData.networkUnit = selectedCurrency.networkUnit;
+            const bestHashRate = chooseBestHashRateUnit(selectedCurrency.networkPower, selectedCurrency.networkUnit);
+            $scope.formData.networkPower = bestHashRate.value;
+            $scope.formData.networkUnit = bestHashRate.unit;
             $scope.formData.blockSize = selectedCurrency.blockSize;
             $scope.formData.blockTime = selectedCurrency.blockTime;
             $scope.formData.timeUnit = 'seconds';
         }else {
-            $scope.formData.power = 0;
-            $scope.formData.unit = $scope.units[0];
             $scope.formData.networkPower = 0;
             $scope.formData.networkUnit = $scope.networkUnits[0];
             $scope.formData.blockSize = 0;
             $scope.formData.blockTime = 0;
             $scope.formData.timeUnit = 'seconds';
         }
+    };
+
+    function calculateCoinFarm(power, unit, coin, currency) {
+        let userPowerPercentage = convertHashrate(power, unit, 'GH/s') / convertHashrate(coin.networkPower, coin.networkUnit,'GH/s');
+        let earningsPerBlock = coin.blockSize;
+        earningsPerBlock *= userPowerPercentage;
+        return currency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][currency]).toFixed(2);
     };
 
     $scope.calculateEarnings = function(timeframe, currency) {

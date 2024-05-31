@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
@@ -17,6 +18,7 @@
             color: #333;
             display: flex;
             flex-direction: column;
+            font-size:1.5em;
             min-height: 100vh;
             font-family: var(--font-family-sans-serif);
         }
@@ -144,10 +146,10 @@
                             </th>
                         </tr>
                         <tr>
-                            <th>Tempo</th>
-                            <th>Moeda</th>
-                            <th ng-hide="formData.currency.in_game_only">Dólar</th>
-                            <th ng-hide="formData.currency.in_game_only">Real</th>
+                            <th style="text-align:center;">Tempo</th>
+                            <th style="text-align:center;">Moeda</th>
+                            <th style="text-align:center;" ng-hide="formData.currency.in_game_only">Dólar</th>
+                            <th style="text-align:center;" ng-hide="formData.currency.in_game_only">Real</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -174,6 +176,129 @@
                             <td>{{calculateEarnings('month', 'amount')}} {{formData.currency.name}}</td>
                             <td ng-hide="formData.currency.in_game_only">${{calculateEarnings('month', 'usd')}}</td>
                             <td ng-hide="formData.currency.in_game_only">R${{calculateEarnings('month', 'brl')}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table ng-if="!formData.currency" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center" colspan="16">
+                                Informações gerais
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center" rowspan="2" colspan="2">
+                                Moeda
+                            </th>
+                            <th style="text-align: center" rowspan="2" colspan="2">
+                                <a href="#" ng-click="orderByField='networkPower'; reverseSort = !reverseSort">
+                                    Poder da rede 
+                                    <span ng-show="orderByField == 'networkPower'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" rowspan="2" colspan="2">
+                                Tamanho do bloco
+                            </th>
+                            <th style="text-align: center" colspan="4">
+                                Valor por bloco
+                            </th>
+                            <th style="text-align: center" colspan="5">
+                                Meu Farm por bloco 
+                                <span title="Preencha seu poder para calcular o Farm">
+                                    <i style="color:rgb(83, 83, 243)" class="fa fa-info-circle"></i>
+                                </span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='block_value_in_usd'; reverseSort = !reverseSort">
+                                    USD 
+                                    <span ng-show="orderByField == 'block_value_in_usd'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='block_value_in_brl'; reverseSort = !reverseSort">
+                                    BRL 
+                                    <span ng-show="orderByField == 'block_value_in_brl'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='user_block_farm_token'; reverseSort = !reverseSort">
+                                    CRIPTO 
+                                    <span ng-show="orderByField == 'user_block_farm_token'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='user_block_farm_brl'; reverseSort = !reverseSort">
+                                    BRL 
+                                    <span ng-show="orderByField == 'user_block_farm_brl'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='user_block_farm_usd'; reverseSort = !reverseSort">
+                                    USD 
+                                    <span ng-show="orderByField == 'user_block_farm_usd'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="currency in currencies | orderBy:orderByField:reverseSort">
+                            <td colspan="2">
+                                <span ng-show="$first">
+                                    <i style="color:#b7b706" class="fa-solid fa-crown"></i>
+                                </span>
+                                {{currency.name}}
+                            </td>
+                            <td colspan="2">{{chooseBestHashRateUnit(currency.networkPower, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(currency.networkPower, 'GH/s').unit}}</td>
+                            <td colspan="2">{{currency.blockSize}} {{currency.name}} a cada {{currency.blockTime}} segundos</td>
+                            <td colspan="2">${{currency.block_value_in_usd}}</td>
+                            <td colspan="2">R${{currency.block_value_in_brl}}</td>
+                            <td colspan="2">{{currency.user_block_farm_token}} {{currency.name}}</td>
+                            <td colspan="2">R${{currency.user_block_farm_brl}}</td>
+                            <td colspan="2">${{currency.user_block_farm_usd}}</td>
                         </tr>
                     </tbody>
                 </table>
