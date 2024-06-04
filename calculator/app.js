@@ -1,5 +1,5 @@
-angular.module('miningApp', [])
-.controller('MiningController', ['$scope', 'CurrencyService', async function($scope, CurrencyService) {
+var app = angular.module('miningApp', []);
+app.controller('MiningController', ['$scope', 'CurrencyService', async function($scope, CurrencyService) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -18,6 +18,12 @@ angular.module('miningApp', [])
     $scope.reverseSort = true;
     const exchangeRates = await CurrencyService.getCurrenciesPrices();
     $scope.exchangeRates = exchangeRates;
+
+    const filterFn = function(currency) {
+        return currency.user_alocated_power && currency.user_alocated_power > 0;
+    };
+    $scope.filterFn = filterFn;
+
 
     const convertHashrate = (value, fromUnit, toUnit) => {
         const units = {
@@ -46,6 +52,11 @@ angular.module('miningApp', [])
         return parseFloat((value * exchangeRates[coin][currency]).toFixed(2));
     };
 
+    const getPercentualPower = function (alocated_power) {
+        const user_power_in_ghs = convertHashrate($scope.formData.power, $scope.formData.unit, 'GH/s');
+        return alocated_power * (user_power_in_ghs / 100);
+    }
+
 
     $scope.$watch('formData.power', function(newvalue) {
         if(!$scope.formData.currency && typeof newvalue !== 'undefined') {
@@ -53,6 +64,7 @@ angular.module('miningApp', [])
                 c.user_block_farm_brl =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'brl');
                 c.user_block_farm_usd =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'usd');
                 c.user_block_farm_token =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'amount');
+                updateAllocatedPower(c);
             });
             if(newvalue > 0) {
                 $scope.orderByField = 'user_block_farm_usd';
@@ -62,6 +74,7 @@ angular.module('miningApp', [])
         }
     });
 
+    $scope.getPercentualPower = getPercentualPower;
     $scope.chooseBestHashRateUnit = chooseBestHashRateUnit;
 
     const convertTime = (value, fromUnit, toUnit) => {
@@ -74,6 +87,12 @@ angular.module('miningApp', [])
             return value;
         }
     };
+
+    const getCurrenciesSum = function(attr) {
+        return $scope.currencies.filter(filterFn).map(c => c[attr] || 0).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+    }
+
+    $scope.getCurrenciesSum = getCurrenciesSum;
 
     $scope.currencies = await CurrencyService.getDetailedCurrencies();
     $scope.currencies.forEach(c => {
@@ -129,6 +148,52 @@ angular.module('miningApp', [])
         earningsPerBlock *= userPowerPercentage;
         return currency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][currency]).toFixed(2);
     };
+
+    const updateAllocatedPower =  function(currency) {
+        const user_alocated_power = parseFloat(currency.user_alocated_power);
+        if(!isNaN(user_alocated_power)) {
+            const percentual_user_alocated_power = getPercentualPower(user_alocated_power);
+            currency.user_alocated_power_value = percentual_user_alocated_power;
+            currency.user_alocated_power_day_profit_in_usd = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'day', currency, 'usd'));
+            currency.user_alocated_power_day_profit_in_brl = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'day', currency, 'brl'));
+            currency.user_alocated_power_day_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'day', currency, 'amount'));
+            currency.user_alocated_power_week_profit_in_usd = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'week', currency, 'usd'));
+            currency.user_alocated_power_week_profit_in_brl = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'week', currency, 'brl'));
+            currency.user_alocated_power_week_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'week', currency, 'amount'));
+            currency.user_alocated_power_month_profit_in_usd = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'usd'));
+            currency.user_alocated_power_month_profit_in_brl = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'brl'));
+            currency.user_alocated_power_month_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'amount'));
+        }
+    };
+
+    
+    $scope.updateAllocatedPower = updateAllocatedPower;
+
+    const calculateEarningsWithValues = function(power_in_ghs, timeframe, coin, fiatCurrency) {
+
+        let earningsPerBlock = coin.blockSize;
+        let blockTimeInSeconds = coin.blockTime;
+
+        let userPowerPercentage = power_in_ghs / coin.networkPower;
+        earningsPerBlock *= userPowerPercentage;
+
+        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
+        
+        switch(timeframe) {
+            case 'block':
+                return fiatCurrency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'day':
+                return fiatCurrency === 'amount' ? earningsPerDay.toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'week':
+                return fiatCurrency === 'amount' ? (earningsPerDay * 7).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 7 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'month':
+                return fiatCurrency === 'amount' ? (earningsPerDay * 30).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 30 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            default:
+                return 0;
+        }
+    };
+
+    $scope.calculateEarningsWithValues = calculateEarningsWithValues;
 
     $scope.calculateEarnings = function(timeframe, currency) {
         if (!$scope.formData.currency || !$scope.formData.blockSize || !$scope.formData.blockTime) {
