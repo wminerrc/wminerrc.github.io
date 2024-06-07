@@ -92,7 +92,7 @@ const template = `
                             font-size: 0.6em;
                             font-weight: bold;
                             color: white;
-                        ">CAN'T BE SOLD</div>
+                        ">INEGOCIAVEL</div>
                     {{/can_be_sold}}
                     </td>
                 </tr>
