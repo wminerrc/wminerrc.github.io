@@ -48,6 +48,45 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
        return {value: value, unit: fromUnit};
     };
 
+    const formatDays = (dias) => {
+        if(!dias) {
+            return "0 dia";
+        }
+
+        if(dias === Number.MAX_SAFE_INTEGER) {
+            return "Sem Saque";
+        }
+
+        const diasPorAno = 365;
+        const diasPorMes = 30;
+        
+        let anos = Math.floor(dias / diasPorAno);
+        let diasRestantes = dias % diasPorAno;
+        let meses = Math.floor(diasRestantes / diasPorMes);
+        diasRestantes = diasRestantes % diasPorMes;
+    
+        let resultado = "";
+    
+        if (anos > 0) {
+            resultado += `${anos} ${anos > 1 ? 'anos' : 'ano'}`;
+            if (meses > 0 || diasRestantes > 0) {
+                resultado += ", ";
+            }
+        }
+    
+        if (meses > 0) {
+            resultado += `${meses} ${meses > 1 ? 'meses' : 'mês'}`;
+            if (diasRestantes > 0) {
+                resultado += " e ";
+            }
+        }
+    
+        if (diasRestantes > 0) {
+            resultado += `${diasRestantes} ${diasRestantes > 1 ? 'dias' : 'dia'}`;
+        }
+        return resultado;
+    }
+
     const exchangeCoin = (value, coin, currency) => {
         return parseFloat((value * exchangeRates[coin][currency]).toFixed(2));
     };
@@ -77,6 +116,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
 
     $scope.getPercentualPower = getPercentualPower;
     $scope.chooseBestHashRateUnit = chooseBestHashRateUnit;
+    $scope.formatDays = formatDays;
 
     const convertTime = (value, fromUnit, toUnit) => {
   
@@ -102,7 +142,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         c.user_block_farm_brl = 0;
         c.user_block_farm_usd = 0;
         c.user_block_farm_token = 0;
-        c.user_days_to_widthdraw = c.disabled_withdraw ? 1000 : 0;
+        c.user_days_to_widthdraw = c.disabled_withdraw ? Number.MAX_SAFE_INTEGER : 0;
     });
     $scope.isLoading = false;
     $scope.$apply();
@@ -151,7 +191,23 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         return currency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][currency]).toFixed(2);
     };
 
-    const updateAllocatedPower =  function(currency) {
+    function calculateDaysUntilWithdraw(power_in_ghs, coin) {
+        if(coin.disabled_withdraw) {
+            return Number.MAX_SAFE_INTEGER;
+        }
+        if(!power_in_ghs) {
+            return 0;
+        }
+        let earningsPerBlock = coin.blockSize;
+        let blockTimeInSeconds = coin.blockTime;
+        let minToWithdraw = coin.min_to_withdraw;
+        let userPowerPercentage = power_in_ghs / coin.networkPower;
+        earningsPerBlock *= userPowerPercentage;
+        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
+        return Math.ceil(minToWithdraw / earningsPerDay);
+    };
+
+    function updateAllocatedPower(currency) {
         const user_alocated_power = parseFloat(currency.user_alocated_power);
         if(!isNaN(user_alocated_power)) {
             const percentual_user_alocated_power = getPercentualPower(user_alocated_power);
@@ -167,33 +223,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
             currency.user_alocated_power_month_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'amount'));
         }
     };
-
     
     $scope.updateAllocatedPower = updateAllocatedPower;
-
-    const calculateDaysUntilWithdraw = function(power_in_ghs, coin) {
-        if(coin.disabled_withdraw) {
-            return 1000;
-        }
-        let earningsPerBlock = coin.blockSize;
-        let blockTimeInSeconds = coin.blockTime;
-        let minToWithdraw = coin.min_to_withdraw;
-        let userPowerPercentage = power_in_ghs / coin.networkPower;
-        earningsPerBlock *= userPowerPercentage;
-        let daysNeeded = 1;
-        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
-        let earningUntilWithdraw = earningsPerDay;
-        while(earningUntilWithdraw < minToWithdraw) {
-            earningUntilWithdraw+= earningsPerDay;
-            daysNeeded++;
-            if(daysNeeded === 999) {
-                break;
-            }
-        }
-        return daysNeeded;
-    };
-
-    $scope.calculateDaysUntilWithdraw = calculateDaysUntilWithdraw;
 
     const calculateEarningsWithValues = function(power_in_ghs, timeframe, coin, fiatCurrency) {
 
