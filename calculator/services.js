@@ -81,6 +81,8 @@ angular.module('miningApp')
                     balance_key: c.balance_key,
                     to_small: c.to_small,
                     divider: c.divider,
+                    disabled_withdraw: c.disabled_withdraw,
+                    min_to_withdraw: c.min,
                     image: `https://rollercoin.com/static/img/icon/currencies/${c.img}.svg?v=1.0`
                 }));
             }

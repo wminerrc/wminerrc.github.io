@@ -189,7 +189,7 @@
                 <table ng-if="!formData.currency" class="table table-bordered">
                     <thead>
                         <tr>
-                            <th style="text-align: center" colspan="17">
+                            <th style="text-align: center" colspan="19">
                                 Informações gerais
                             </th>
                         </tr>
@@ -216,7 +216,7 @@
                             <th style="text-align: center" colspan="4">
                                 Valor por bloco
                             </th>
-                            <th style="text-align: center" colspan="7">
+                            <th style="text-align: center" colspan="9">
                                 Meu Farm por bloco 
                                 <span title="Preencha seu poder para calcular o Farm">
                                     <i style="color:rgb(83, 83, 243)" class="fa fa-info-circle"></i>
@@ -290,6 +290,19 @@
                                 </a>
                             </th>
                             <th style="text-align: center" colspan="2">
+                                <a href="#" ng-click="orderByField='user_days_to_widthdraw'; reverseSort = !reverseSort">
+                                    Saque mínimo 
+                                    <span ng-show="orderByField == 'user_days_to_widthdraw'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" colspan="2">
                                 %
                             </th>
                         </tr>
@@ -309,6 +322,9 @@
                                 <td colspan="2">{{currency.user_block_farm_token}} {{currency.name}}</td>
                                 <td colspan="2">R${{currency.user_block_farm_brl}}</td>
                                 <td colspan="2">${{currency.user_block_farm_usd}}</td>
+                                <td ng-if="currency.user_days_to_widthdraw === 1000" colspan="2">Sem saque</td>
+                                <td ng-if="currency.user_days_to_widthdraw >= 0 && currency.user_days_to_widthdraw < 999" colspan="2">{{currency.user_days_to_widthdraw}} dia(s)</td>
+                                <td ng-if="currency.user_days_to_widthdraw === 999" colspan="2">999+ dias</td>
                                 <td colspan="2"><input type="text" ng-disabled="!formData.power" name="input{{$index}}" id="power" class="form-control" ng-model="currency.user_alocated_power" ng-change="updateAllocatedPower(currency)" style="width:45px"></td>
                             </tr>
                     </tbody>

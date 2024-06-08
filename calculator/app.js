@@ -64,6 +64,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
                 c.user_block_farm_brl =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'brl');
                 c.user_block_farm_usd =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'usd');
                 c.user_block_farm_token =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'amount');
+                c.user_days_to_widthdraw = calculateDaysUntilWithdraw(convertHashrate(newvalue,  $scope.formData.unit, 'GH/s'),c);
                 updateAllocatedPower(c);
             });
             if(newvalue > 0) {
@@ -101,6 +102,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         c.user_block_farm_brl = 0;
         c.user_block_farm_usd = 0;
         c.user_block_farm_token = 0;
+        c.user_days_to_widthdraw = c.disabled_withdraw ? 1000 : 0;
     });
     $scope.isLoading = false;
     $scope.$apply();
@@ -168,6 +170,30 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
 
     
     $scope.updateAllocatedPower = updateAllocatedPower;
+
+    const calculateDaysUntilWithdraw = function(power_in_ghs, coin) {
+        if(coin.disabled_withdraw) {
+            return 1000;
+        }
+        let earningsPerBlock = coin.blockSize;
+        let blockTimeInSeconds = coin.blockTime;
+        let minToWithdraw = coin.min_to_withdraw;
+        let userPowerPercentage = power_in_ghs / coin.networkPower;
+        earningsPerBlock *= userPowerPercentage;
+        let daysNeeded = 1;
+        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
+        let earningUntilWithdraw = earningsPerDay;
+        while(earningUntilWithdraw < minToWithdraw) {
+            earningUntilWithdraw+= earningsPerDay;
+            daysNeeded++;
+            if(daysNeeded === 999) {
+                break;
+            }
+        }
+        return daysNeeded;
+    };
+
+    $scope.calculateDaysUntilWithdraw = calculateDaysUntilWithdraw;
 
     const calculateEarningsWithValues = function(power_in_ghs, timeframe, coin, fiatCurrency) {
 
