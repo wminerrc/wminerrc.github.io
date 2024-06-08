@@ -99,7 +99,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
 
     $scope.$watch('formData.power', function(newvalue) {
         if(!$scope.formData.currency && typeof newvalue !== 'undefined') {
-            $scope.currencies.forEach(c => {
+            $scope.currencies?.forEach(c => {
                 c.user_block_farm_brl =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'brl');
                 c.user_block_farm_usd =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'usd');
                 c.user_block_farm_token =  calculateCoinFarm(newvalue, $scope.formData.unit, c, 'amount');
@@ -130,13 +130,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
     };
 
     const getCurrenciesSum = function(attr) {
-        return $scope.currencies.filter(filterFn).map(c => c[attr] || 0).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        return $scope.currencies?.filter(filterFn).map(c => c?.[attr] || 0).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
     }
 
     $scope.getCurrenciesSum = getCurrenciesSum;
 
     $scope.currencies = await CurrencyService.getDetailedCurrencies();
-    $scope.currencies.forEach(c => {
+    $scope.currencies?.forEach(c => {
         c.block_value_in_brl = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'brl');
         c.block_value_in_usd = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'usd');
         c.user_block_farm_brl = 0;

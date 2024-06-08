@@ -1,5 +1,81 @@
-angular.module('miningApp')
-.service('CurrencyService', ['$http', '$q', function($http, $q) {
+const service_app = angular.module('miningApp');
+
+service_app.factory('retryInterceptor', function($q, $injector, $timeout) {
+    const retryLimit = 5;
+    const retryDelay = 1000;
+
+    return {
+        responseError: function(response) {
+            const config = response.config;
+
+            if (!config.retryCount) {
+                config.retryCount = 0;
+            }
+
+            if (config.retryCount < retryLimit) {
+                config.retryCount++;
+                const $http = $injector.get('$http');
+                return $timeout(function() {
+                    return $http(config);
+                }, retryDelay);
+            }
+
+            return $q.reject(response);
+        }
+    };
+  });
+
+  service_app.factory('cacheInterceptor', function($q, $injector) {
+    const cacheKeyPrefix = 'http_cache_';
+    const cacheDuration = 24 * 60 * 60 * 1000; // 1 dia em milissegundos
+
+    function getCacheKey(url) {
+      return cacheKeyPrefix + SparkMD5.hash(url);
+    }
+
+    function isCacheValid(cacheEntry) {
+      if (!cacheEntry) return false;
+      const currentTime = new Date().getTime();
+      return currentTime - cacheEntry.timestamp < cacheDuration;
+    }
+
+    return {
+      request: function(config) {
+        const cacheKey = getCacheKey(config.url);
+        const cachedResponse = JSON.parse(localStorage.getItem(cacheKey));
+
+        if (isCacheValid(cachedResponse)) {
+          return $q.resolve({
+            config: config,
+            status: 200,
+            data: cachedResponse.data,
+            cached: true
+          });
+        }
+        
+        return config;
+      },
+      response: function(response) {
+        const cacheKey = getCacheKey(response.config.url);
+        const cacheEntry = {
+          data: response.data,
+          timestamp: new Date().getTime()
+        };
+
+        localStorage.setItem(cacheKey, JSON.stringify(cacheEntry));
+
+        return response;
+      }
+    };
+  });
+
+
+    service_app.config(function($httpProvider) {
+        $httpProvider.interceptors.push('cacheInterceptor');
+        $httpProvider.interceptors.push('retryInterceptor');
+    });
+
+service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
 
     const current_date = new Date().toISOString().split('T')[0];
 
@@ -24,6 +100,25 @@ angular.module('miningApp')
     const setCache = (data, cacheKey) => {
         localStorage.setItem(cacheKey, JSON.stringify(data));
         localStorage.setItem(`${cacheKey}_exp`, new Date().getTime().toString());
+    };
+
+    const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const response = await $http.get(url);
+                if (response.status === 200) {
+                    const result = JSON.parse(response.data.contents);
+                    return result.data[0].value;
+                } else {
+                    throw new Error(`HTTP status ${response.status}`);
+                }
+            } catch (error) {
+                if (i === retries - 1) {
+                    throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
     };
 
     
@@ -130,11 +225,8 @@ angular.module('miningApp')
         const detailedCurrencies = [];
         for (const currency of currencies) {
             var blockSize = await getBlockSizeByCurrency(currency.balance_key);
-            await delay(1500);
             var networkPower = await getNetworkPowerByCurrency(currency.balance_key);
-            await delay(1500);
             var blockTime = await getBlockTimeByCurrency(currency.balance_key);
-            await delay(1500);
             currency.blockSize = (blockSize/currency.divider) / currency.to_small;
             currency.networkPower = networkPower;
             currency.blockTime = blockTime;
