@@ -42,12 +42,12 @@ color: white;
 
 #balao {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 90%;
+    left: 90%;
     transform: translate(-50%, -50%);
-    width: 80%; /* Você pode ajustar o tamanho conforme necessário */
-    height: 80%; /* Você pode ajustar o tamanho conforme necessário */
-    background-color: red;
+    width: 50%; /* Você pode ajustar o tamanho conforme necessário */
+    height: 50%; /* Você pode ajustar o tamanho conforme necessário */
+    background-color: green;
     color: #fff;
     padding: 15px;
     border-radius: 10px;

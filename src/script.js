@@ -335,9 +335,9 @@ window.onload = () => {
         });
     });
 
-    /*setTimeout(function() {
-        balao.style.display = "block";
-      }, 2000);*/
+    // setTimeout(function() {
+    //     balao.style.display = "block";
+    //   }, 2000);
     
 
     
