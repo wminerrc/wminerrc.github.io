@@ -1,4 +1,5 @@
 var app = angular.module('miningApp', []);
+
 app.controller('MiningController', ['$scope', 'CurrencyService', async function($scope, CurrencyService) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
@@ -15,6 +16,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
     $scope.formData = default_form;
     $scope.isLoading = true;
     $scope.orderByField = 'block_value_in_usd';
+    $scope.orderByFarmField = 'user_alocated_power_month_profit_in_usd';
     $scope.reverseSort = true;
     const exchangeRates = await CurrencyService.getCurrenciesPrices();
     $scope.exchangeRates = exchangeRates;
@@ -127,6 +129,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         } else {
             return value;
         }
+    };
+
+    $scope.hasAnyAllocatedPower = function() {
+        return $scope.currencies?.find(c => c.user_alocated_power > 0);
     };
 
     const getCurrenciesSum = function(attr) {
@@ -251,6 +257,20 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
     };
 
     $scope.calculateEarningsWithValues = calculateEarningsWithValues;
+
+    $scope.calculateAllCoins = function() {
+        $scope.currencies?.forEach(c => {
+            c.user_alocated_power = 100
+            updateAllocatedPower(c);
+        });
+    }
+
+    $scope.resetAlocatedPower = function() {
+        $scope.currencies?.forEach(c => {
+            c.user_alocated_power = 0
+            updateAllocatedPower(c);
+        });
+    }
 
     $scope.calculateEarnings = function(timeframe, currency) {
         if (!$scope.formData.currency || !$scope.formData.blockSize || !$scope.formData.blockTime) {

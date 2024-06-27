@@ -82,6 +82,29 @@
         .wrong-value {
             color:red;
         }
+        .best-coin:not([disabled]) {
+            background-color: gold;
+            font-weight: bolder;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .best-coin[disabled] {
+            background-color: #d7d0a7;
+            font-weight: bolder;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        tbody.allocated-farm tr:first-child {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body ng-controller="MiningController">
@@ -130,6 +153,11 @@
                                 <option value="seconds">Segundos</option>
                                 <option value="minutes">Minutos</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-inline">
+                            <button class="best-coin animated-button" ng-disabled="!formData.power" ng-click="calculateAllCoins()"><i class="fa-solid fa-coins"></i> Calcular melhor moeda</button>
                         </div>
                     </div>
                 </form>
@@ -304,6 +332,9 @@
                                 </a>
                             </th>
                             <th style="text-align: center" colspan="2">
+                                <div ng-if="hasAnyAllocatedPower()">
+                                    <button ng-click="resetAlocatedPower()"><i class="fa fa-trash"></i></button><br/>
+                                </div>
                                 %
                             </th>
                         </tr>
@@ -355,37 +386,130 @@
                         </tr>
                         <tr>
                             <th style="text-align: center" colspan="2">
-                                USD
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_day_profit_in_usd'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    USD
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_day_profit_in_usd'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                BRL
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_day_profit_in_brl'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    BRL
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_day_profit_in_brl'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                CRIPTO
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_day_profit_in_cripto'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    CRIPTO
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_day_profit_in_cripto'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                USD
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_week_profit_in_usd'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    USD
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_week_profit_in_usd'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                BRL
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_week_profit_in_brl'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    BRL
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_week_profit_in_brl'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                CRIPTO
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_week_profit_in_cripto'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    CRIPTO
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_week_profit_in_cripto'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                USD
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_month_profit_in_usd'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    USD
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_month_profit_in_usd'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                BRL
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_month_profit_in_brl'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    BRL
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_month_profit_in_brl'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                             <th style="text-align: center" colspan="2">
-                                CRIPTO
+                                <a href="#" ng-click="orderByFarmField='user_alocated_power_month_profit_in_cripto'; reverseSort = !reverseSort; $event.preventDefault();">
+                                    CRIPTO
+                                    <span ng-show="orderByFarmField == 'user_alocated_power_month_profit_in_cripto'">
+                                        <span ng-show="!reverseSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                            <tr ng-repeat="currency in filteredCurrencies = (currencies | filter:filterFn)">
+                    <tbody class="allocated-farm">
+                            <tr ng-repeat="currency in filteredCurrencies = (currencies | filter:filterFn | orderBy:orderByFarmField:reverseSort)">
                                 <td colspan="2">
+                                    <span ng-show="$first">
+                                        <i style="color:#b7b706" class="fa-solid fa-crown"></i>
+                                    </span>
                                     {{currency.name}}
                                 </td>
                                 <td colspan="2">{{chooseBestHashRateUnit(currency.user_alocated_power_value, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(currency.user_alocated_power_value, 'GH/s').unit}}</td>

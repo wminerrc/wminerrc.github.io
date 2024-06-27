@@ -1,12 +1,15 @@
 const service_app = angular.module('miningApp');
 
 service_app.factory('retryInterceptor', function($q, $injector, $timeout) {
-    const retryLimit = 5;
+    const retryLimit = 15;
     const retryDelay = 1000;
 
     return {
         responseError: function(response) {
             const config = response.config;
+            if(!config) {
+                return $q.reject(response);
+            }
 
             if (!config.retryCount) {
                 config.retryCount = 0;
@@ -45,12 +48,11 @@ service_app.factory('retryInterceptor', function($q, $injector, $timeout) {
         const cachedResponse = JSON.parse(localStorage.getItem(cacheKey));
 
         if (isCacheValid(cachedResponse)) {
-          return $q.resolve({
-            config: config,
-            status: 200,
-            data: cachedResponse.data,
-            cached: true
-          });
+          config.status = 200;
+          config.config = config;
+          config.data = cachedResponse.data;
+          cached = true;
+          return $q.resolve(config);
         }
         
         return config;
