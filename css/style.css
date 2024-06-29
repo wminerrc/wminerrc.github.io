@@ -42,11 +42,10 @@ color: white;
 
 #balao {
     position: fixed;
-    top: 90%;
-    left: 90%;
-    transform: translate(-50%, -50%);
-    width: 50%; /* Você pode ajustar o tamanho conforme necessário */
-    height: 50%; /* Você pode ajustar o tamanho conforme necessário */
+    bottom: 10px; /* Define a distância do fundo da página */
+    right: 10px;  /* Define a distância do lado direito da página */
+    width: 500px; /* Defina uma largura adequada para o balão */
+    height: auto; /* Permita que a altura seja ajustada automaticamente conforme o conteúdo */
     background-color: green;
     color: #fff;
     padding: 15px;
