@@ -40,7 +40,7 @@ background-color: #8f96c1;
 color: white;
 }
 
-#balao {
+.balao {
     position: fixed;
     bottom: 10px; /* Define a distância do fundo da página */
     right: 10px;  /* Define a distância do lado direito da página */
@@ -56,15 +56,31 @@ color: white;
     z-index: 999;
 }
 
-#balao p {
+.balao p {
 margin: 0;
 font-size: 20px;
 }
 
-#balao a {
+.balao a {
 color: #fff;
-text-decoration: underline;
+text-decoration: none;
 font-size: 20px;
+}
+
+
+
+#balao2{
+    bottom: 100px;
+    width: 266px;
+    height: 96px;
+    background: url(../images/tap.png);
+}
+
+#balao2 p{
+    vertical-align: middle;
+    margin-top: 40px;
+    background-color: rgba(255, 255, 255, 0.6);
+    color: #000000;
 }
 
 .fechar {

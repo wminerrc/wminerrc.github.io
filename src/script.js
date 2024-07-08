@@ -273,16 +273,13 @@ const template = `
         </tbody>
     </table>
     </div>
-    <div id="balao">
-        <h1>Ola, queridos amigos!</h1>
-        <br/><br/><br/><br/><br/><br/><br/><br/>
+    <div id="balao2" class="balao">
+        <span class="fechar" onclick="document.getElementById('balao2').style.display = 'none';">X</span>
+        <a href="https://t.me/rollertap_bot?start=1969089985" target="_blank"><p>Acesse o RollerTAP e ganhe tokens RCC!</p></a>
+    </div>
+    <div id="balao" class="balao">
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
-        <p>{{bestDiscount}}% de desconto! Mas, infelizmente os formularios estao temporariamente descontinuados.</p>
-        <p>Lembre-se que o rollercoin eh um jogo, e se possivel movimente-se para ajudar os criadores de conteudo BR <3</p>
-        <p>Voce sabe que a mecanica de formularios eh uma otima maneira para os canais se manterem ativos e produzindo</p>
-        <p>Alem de ser um meio gamificado e exclusivo de garantir recompensas para voce, querido jogador</p>
-        <br/><br/><br/><br/><br/><br/><br/><br/>
-        <h1>Ate a proxima :(</h1>
+        <a href="https://forms.gle/BJwtTHr1Zrb216uA9" target="_blank"><p>{{bestDiscount}}% de desconto! Preencha o nosso formulario, ajude o canal e ainda participe de sorteios insanos.</p></a>
     </div>
 `
 
@@ -335,9 +332,13 @@ window.onload = () => {
         });
     });
 
-    // setTimeout(function() {
-    //     balao.style.display = "block";
-    //   }, 2000);
+    setTimeout(function() {
+        balao.style.display = "block";
+      }, 4000);
+
+      setTimeout(function() {
+        balao2.style.display = "block";
+      }, 2000);
     
 
     
