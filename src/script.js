@@ -332,9 +332,9 @@ window.onload = () => {
         });
     });
 
-    setTimeout(function() {
-        balao.style.display = "block";
-      }, 4000);
+    // setTimeout(function() {
+    //     balao.style.display = "block";
+    //   }, 4000);
 
       setTimeout(function() {
         balao2.style.display = "block";
