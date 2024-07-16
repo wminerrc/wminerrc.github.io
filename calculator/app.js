@@ -158,27 +158,34 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         $scope.formData.networkPower = convertHashrate($scope.formData.networkPower, oldUnit, $scope.formData.networkUnit);
     };
 
-    $scope.closeModal = function() {
+    $scope.closeModal = async function() {
         const confettiSound = document.getElementById('confettiSound');
-        confettiSound.play();
         const jsConfetti = new JSConfetti()
-        jsConfetti.addConfetti({
-            confettiNumber: 300});
-        setTimeout(function() {
+        setTimeout(async function() {
             jsConfetti.addConfetti({ confettiNumber: 300});
+            await sleep(50);
             confettiSound.play();
         }, 3000);
-        setTimeout(function() {
-            jsConfetti.addConfetti({ confettiNumber: 300});
-        }, 5000);
-        setTimeout(function() {
-            jsConfetti.addConfetti({ confettiNumber: 300});
-            alert('O bônus de coleção acabou ihuuuuuuuuu');
-        }, 6000);
+        setTimeout(async function() {
+            while(true) {
+                await sleep(1000);
+                jsConfetti.addConfetti({ confettiNumber: getRandomInt(10,300)});
+            }
+        }, 4000);
         const overlay = document.getElementById('overlay');
         overlay.style.display = 'none';
         $scope.$apply();    
     };
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);    // Arredonda para cima para garantir que não seja menor que o mínimo
+        max = Math.floor(max);   // Arredonda para baixo para garantir que não seja maior que o máximo
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
 
     $scope.updatePowerUnit = function(oldUnit) {
         $scope.formData.power = convertHashrate($scope.formData.power, oldUnit, $scope.formData.unit);
