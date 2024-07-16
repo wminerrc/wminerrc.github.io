@@ -10,6 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.0/spark-md5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
     <style>
@@ -105,9 +106,76 @@
         tbody.allocated-farm tr:first-child {
             background-color: rgba(255, 255, 255, 0.5);
         }
+        #message {
+            font-size: 24px;
+            animation: slideUp 2s forwards;
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    display:block;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+    margin-left: 10%;
+    margin-top: 5%;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
     </style>
 </head>
 <body ng-controller="MiningController">
+    <div class="overlay" id="overlay">
+        <div class="modal">
+          <h2>Olá querido amigo!</h2>
+          <p>Essa ferramenta é feita com todo carinho e cuidado para você</p><br>
+          <p>Se ela te ajudou, não hesite em contribuir com a carteia no rodapé da página</p>
+          <button id="closeButton" ng-click="closeModal()">Fechar</button>
+        </div>
+    </div>
+    <audio id="confettiSound">
+        <source src="confetti-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <div class="loading-overlay" ng-show="isLoading">
         <p>Carregando...Isso vai demorar um pouco!</p>
     </div>

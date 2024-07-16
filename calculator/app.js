@@ -151,10 +151,33 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         c.user_days_to_widthdraw = c.disabled_withdraw ? Number.MAX_SAFE_INTEGER : 0;
     });
     $scope.isLoading = false;
+
     $scope.$apply();
 
     $scope.updateNetworkPowerUnit = function(oldUnit) {
         $scope.formData.networkPower = convertHashrate($scope.formData.networkPower, oldUnit, $scope.formData.networkUnit);
+    };
+
+    $scope.closeModal = function() {
+        const confettiSound = document.getElementById('confettiSound');
+        confettiSound.play();
+        const jsConfetti = new JSConfetti()
+        jsConfetti.addConfetti({
+            confettiNumber: 300});
+        setTimeout(function() {
+            jsConfetti.addConfetti({ confettiNumber: 300});
+            confettiSound.play();
+        }, 3000);
+        setTimeout(function() {
+            jsConfetti.addConfetti({ confettiNumber: 300});
+        }, 5000);
+        setTimeout(function() {
+            jsConfetti.addConfetti({ confettiNumber: 300});
+            alert('O bônus de coleção acabou ihuuuuuuuuu');
+        }, 6000);
+        const overlay = document.getElementById('overlay');
+        overlay.style.display = 'none';
+        $scope.$apply();    
     };
 
     $scope.updatePowerUnit = function(oldUnit) {
