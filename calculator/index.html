@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
+    <script src="user-miner-service.js"></script>
     <style>
         body {
             --font-family-sans-serif: pixelSC,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
@@ -231,6 +232,240 @@
                     </div>
                 </form>
             </div>
+            <div ng-if="user_data" class="col-md-8 table-container">
+                <h3>Calculando ganhos para {{user_data.name}}</h3>
+                <fieldset>
+                    <div>
+                        <input type="checkbox" ng-model="formData.showMiners" name="show_miners"/>
+                        <label for="scales">Exibir miners</label>
+                        <input type="checkbox" ng-model="formData.showRacks" name="show_miners" />
+                        <label for="scales">Exibir racks</label>
+                    </div>
+                </fieldset>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                Usuário
+                            </th>
+                            <th style="text-align: center">
+                                Avatar
+                            </th>
+                            <th style="text-align: center">
+                                Poder de jogos
+                            </th>
+                            <th style="text-align: center">
+                                Poder de miners
+                            </th>
+                            <th style="text-align: center">
+                                Poder de racks
+                            </th>
+                            <th style="text-align: center">
+                                Poder temporário
+                            </th>
+                            <th style="text-align: center">
+                                Total de poder de mineração
+                            </th>
+                            <th style="text-align: center">
+                                Bônus de coleção
+                            </th>
+                            <th style="text-align: center">
+                                Salas liberadas
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center">
+                                {{user_data.name}}
+                            </td>
+                            <td style="text-align: center">
+                                <img src="https://avatars.rollercoin.com/static/avatars/thumbnails/48/{{user_data.avatar_id}}.png?v=1652150400524" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(user_data.powerData.racks, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.racks, 'GH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{(user_data.powerData.bonus_percent / 100)}}%
+                            </td>
+                            <td style="text-align: center">
+                                {{user_data.roomData.rooms.length}}/4
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-if="formData.showRacks" class="col-md-8 table-container">
+                <h3>Racks de {{user_data.name}}</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByRacksField='name'; reverseRacksSort = !reverseRacksSort">
+                                    Nome
+                                    <span ng-show="orderByRacksField == 'name'">
+                                        <span ng-show="!reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                Imagem
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByRacksField='bonus'; reverseRacksSort = !reverseRacksSort">
+                                    Bônus
+                                    <span ng-show="orderByRacksField == 'bonus'">
+                                        <span ng-show="!reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByRacksField='cells'; reverseRacksSort = !reverseRacksSort">
+                                    Células
+                                    <span ng-show="orderByRacksField == 'cells'">
+                                        <span ng-show="!reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseRacksSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="rack in user_data.roomData.racks | orderBy:orderByRacksField:reverseRacksSort">
+                            <td>
+                                <span ng-show="$first">
+                                    <i style="color:#b7b706" class="fa-solid fa-crown"></i>
+                                </span>
+                                {{rack.name}}
+                            </td>
+                            <td><img style="width:25%;height:25%" src="https://static.rollercoin.com/static/img/market/racks/{{rack.rack_id}}.png?v=1.0.3"/></td>
+                            <td>{{rack.bonus/100}}%</td>
+                            <td>{{rack.cells}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-if="formData.showMiners" class="col-md-8 table-container">
+                <h3>Miners de {{user_data.name}}</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByMinersField='name'; reverseMinersSort = !reverseMinersSort">
+                                    Nome
+                                    <span ng-show="orderByMinersField == 'name'">
+                                        <span ng-show="!reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                Imagem
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByMinersField='level'; reverseMinersSort = !reverseMinersSort">
+                                    Level
+                                    <span ng-show="orderByMinersField == 'level'">
+                                        <span ng-show="!reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByMinersField='power'; reverseMinersSort = !reverseMinersSort">
+                                    Poder
+                                    <span ng-show="orderByMinersField == 'power'">
+                                        <span ng-show="!reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByMinersField='bonus_percent'; reverseMinersSort = !reverseMinersSort">
+                                    Bônus
+                                    <span ng-show="orderByMinersField == 'bonus_percent'">
+                                        <span ng-show="!reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a href="#" ng-click="orderByMinersField='width'; reverseMinersSort = !reverseMinersSort">
+                                    Células
+                                    <span ng-show="orderByMinersField == 'width'">
+                                        <span ng-show="!reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-asc"></i>
+                                        </span>
+                                        <span ng-show="reverseMinersSort">
+                                            <i class="fa fa-fw fa-sort-desc"></i>
+                                        </span>
+                                    </span>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="miner in user_data.roomData.miners | orderBy:orderByMinersField:reverseMinersSort">
+                            <td>
+                                <span ng-show="$first">
+                                    <i style="color:#b7b706" class="fa-solid fa-crown"></i>
+                                </span>
+                                {{miner.name}}
+                            </td>
+                            <td><img style="width:25%;height:25%" src="https://static.rollercoin.com/static/img/market/miners/{{miner.filename}}.gif?v=1707996476608"/></td>
+                            <td>{{miner.level_label}}</td>
+                            <td>{{chooseBestHashRateUnit(miner.power, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(miner.power, 'GH/s').unit}}</td>
+                            <td>{{(miner.bonus_percent / 100)}}%</td>
+                            <td>{{miner.width}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="col-md-8 table-container">
                 <h3>Resultados</h3>
                 <table ng-if="formData.currency" class="table table-bordered">

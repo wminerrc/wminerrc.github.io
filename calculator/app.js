@@ -1,6 +1,6 @@
 var app = angular.module('miningApp', []);
 
-app.controller('MiningController', ['$scope', 'CurrencyService', async function($scope, CurrencyService) {
+app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', async function($scope, CurrencyService, UserMinerService) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -17,6 +17,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
     $scope.isLoading = true;
     $scope.orderByField = 'block_value_in_usd';
     $scope.orderByFarmField = 'user_alocated_power_month_profit_in_usd';
+    $scope.orderByMinersField = 'power';
+    $scope.orderByRacksField = 'bonus';
+    $scope.reverseRacksSort = true;
+    $scope.reverseMinersSort = true;
     $scope.reverseSort = true;
     const exchangeRates = await CurrencyService.getCurrenciesPrices();
     $scope.exchangeRates = exchangeRates;
@@ -26,7 +30,19 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
     };
     $scope.filterFn = filterFn;
 
+    function getUrlParamValue(paramName){
+        var params = new URL(location).searchParams;
+        var keyName = Array.from(params.keys()).find(
+            function(key){
+                return key.toLowerCase() == paramName.toLowerCase();
+            }
+        );
+        return params.get(keyName);
+    }
 
+    let loaded_user = getUrlParamValue('user');
+
+    
     const convertHashrate = (value, fromUnit, toUnit) => {
         const units = {
             'GH/s': 1,
@@ -38,17 +54,27 @@ app.controller('MiningController', ['$scope', 'CurrencyService', async function(
         return value * units[fromUnit] / units[toUnit];
     };
 
+
     const chooseBestHashRateUnit = (value, fromUnit) => {
-       const units = $scope.networkUnits.slice();
-       do{
-            let unit =  units.pop();
-            let converted_value = convertHashrate(value, fromUnit, unit);
-            if(converted_value > 1) {
-                return {value: converted_value, unit: unit};
-            }
-       }while(units.length);
-       return {value: value, unit: fromUnit};
-    };
+        const units = $scope.networkUnits.slice();
+        do{
+             let unit =  units.pop();
+             let converted_value = convertHashrate(value, fromUnit, unit);
+             if(converted_value > 1) {
+                 return {value: converted_value, unit: unit};
+             }
+        }while(units.length);
+        return {value: value, unit: fromUnit};
+     };
+
+    if(typeof loaded_user === 'string' && loaded_user !== '') {
+        $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);        
+        const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
+        $scope.formData.power = bestHashRate.value;
+        $scope.formData.unit = bestHashRate.unit;
+        $scope.formData.showMiners = false;
+        $scope.formData.showRacks = false;
+    }
 
     const formatDays = (dias) => {
         if(!dias) {
