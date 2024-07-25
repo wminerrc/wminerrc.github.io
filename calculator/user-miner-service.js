@@ -2,11 +2,11 @@ let service = angular.module('miningApp');
 service.service('UserMinerService', ['$http', '$q', function($http, $q) {
 
     const miner_levels = [
-        'Comum',
-        'Incomum',
-        'Rara',
-        'Épica',
-        'Lendária',
+        'Common',
+        'Incommon',
+        'Rare',
+        'Epic',
+        'Lendary',
         'Unreal',
     ];
 
@@ -18,6 +18,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
 
             user.roomData.miners.forEach(m => {
                 m.level_label = miner_levels[m.level];
+                m.simulation_id = btoa(unescape(encodeURIComponent(`${m.name}_${miner_levels[m.level]}`.toLowerCase())));
             });
             user.roomData.racks.forEach(r => {
                 r.cells = r.rack_info.width * r.rack_info.height;

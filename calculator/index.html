@@ -9,12 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.0/spark-md5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
     <script src="user-miner-service.js"></script>
+    <script src="miner-service.js"></script>
     <style>
+        .autocomplete-container {
+            padding: 20px;
+        }
         body {
             --font-family-sans-serif: pixelSC,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
             background: linear-gradient(90deg, rgba(255,25,147,0.55) 0%, rgba(2,199,251,0.73) 100%);
@@ -185,6 +190,7 @@
         <img src="images/hamster.png" style="height:50px;width:50px;margin-right:15px;">
         <h1>Calculadora Rollercoin | Wminer</h1>
     </header>
+
     <div class="container">
         <div class="row">
             <div class="col-md-4">
@@ -240,6 +246,8 @@
                         <label for="scales">Exibir miners</label>
                         <input type="checkbox" ng-model="formData.showRacks" name="show_miners" />
                         <label for="scales">Exibir racks</label>
+                        <input type="checkbox" ng-model="formData.showAddMinerSimulation" name="show_add_miner_simulation" />
+                        <label for="scales">Simular aquisições</label>
                     </div>
                 </fieldset>
                 <table class="table table-bordered">
@@ -285,7 +293,11 @@
                             <td style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').unit}}
                             </td>
-                            <td style="text-align: center">
+                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                                <s>{{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').unit}}</s></br>
+                                {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').unit}}
+                            </td>
+                            <td ng-if="!user_data.newPowerData" style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').unit}}
                             </td>
                             <td style="text-align: center">
@@ -294,10 +306,18 @@
                             <td style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').unit}}
                             </td>
-                            <td style="text-align: center">
+                            <td ng-if="!user_data.newPowerData" style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').unit}}
                             </td>
-                            <td style="text-align: center">
+                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                                <s>{{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').unit}}</s></br>
+                                {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').unit}}
+                            </td>
+                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                                <s>{{(user_data.powerData.bonus_percent / 100)}}%</s></br>
+                                {{(user_data.newPowerData.bonus_percent / 100)}}%
+                            </td>
+                            <td ng-if="!user_data.newPowerData" style="text-align: center">
                                 {{(user_data.powerData.bonus_percent / 100)}}%
                             </td>
                             <td style="text-align: center">
@@ -371,6 +391,108 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div ng-if="customMiners.length > 0" class="col-md-8 table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="5" style="text-align: center">
+                                Miners adicionadas
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center">
+                                Nome
+                            </th>
+                            <th style="text-align: center">
+                                Level
+                            </th>
+                            <th style="text-align: center">
+                                Poder
+                            </th>
+                            <th style="text-align: center">
+                                Bônus
+                            </th>
+                            <th style="text-align: center">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="miner in customMiners track by $index">
+                            <td style="text-align: center">
+                                {{miner.mine_name}}
+                            </td>
+                            <td style="text-align: center">
+                                {{miner.mine_level}}
+                            </td>
+                            <td style="text-align: center">
+                                {{chooseBestHashRateUnit(miner.mine_power, 'TH/s').value.toFixed(2)}}{{chooseBestHashRateUnit(miner.mine_power, 'TH/s').unit}}
+                            </td>
+                            <td style="text-align: center">
+                                {{miner.mine_bonus}}%
+                            </td>
+                            <td style="text-align: center">
+                                <button ng-click="removeMinerFromSimulation(miner)">Remover!</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-if="formData.showAddMinerSimulation" class="col-md-8 table-container">
+                <div class="autocomplete-container">
+                    <input type="text" 
+                        class="form-control" 
+                        ng-model="searchText" 
+                        placeholder="Procurar miner..." 
+                        uib-typeahead="miner as miner.mine_name for miner in getMinersByName($viewValue)"
+                        typeahead-no-results="noResults"
+                        typeahead-on-select="onSelect($item, $model, $label, $event)"
+                        typeahead-loading="loading">
+                </div>
+                <div ng-if="detailed_miners">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th colspan="4" style="text-align: center">
+                                    {{chosen_mine}}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: center">
+                                    Level
+                                </th>
+                                <th style="text-align: center">
+                                    Poder
+                                </th>
+                                <th style="text-align: center">
+                                    Bônus
+                                </th>
+                                <th style="text-align: center">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="miner in detailed_miners">
+                                <td style="text-align: center">
+                                    {{miner.mine_level}}
+                                </td>
+                                <td style="text-align: center">
+                                    {{chooseBestHashRateUnit(miner.mine_power, 'TH/s').value.toFixed(2)}}{{chooseBestHashRateUnit(miner.mine_power, 'TH/s').unit}}
+                                </td>
+                                <td style="text-align: center">
+                                    {{miner.mine_bonus}}%
+                                </td>
+                                <td style="text-align: center">
+                                    <button ng-click="addMinerToSimulation(miner)">Adicionar!</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div ng-if="formData.showMiners" class="col-md-8 table-container">

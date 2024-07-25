@@ -1,6 +1,6 @@
-var app = angular.module('miningApp', []);
+var app = angular.module('miningApp', ['ui.bootstrap']);
 
-app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', async function($scope, CurrencyService, UserMinerService) {
+app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', async function($scope, CurrencyService, UserMinerService, MinerService) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -142,6 +142,54 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     });
 
+    $scope.getMinersByName = async function(name) {
+        return await MinerService.getMinersByName(name);
+    }
+
+    $scope.onSelect = async function($item) {
+        $scope.isLoading = true;
+        $scope.detailed_miners = await MinerService.getDetailedMiner($item);
+        $scope.chosen_mine = $item.mine_name;
+        $scope.isLoading = false;
+        $scope.$apply();
+    }
+
+    $scope.addMinerToSimulation = async function($item) {
+        $scope.customMiners = $scope.customMiners || [];
+        $scope.customMiners.push({...$item, rdid: uuidv4()});
+        $scope.recalculateUserPower();
+    }
+
+    $scope.removeMinerFromSimulation = async function($item) {
+        $scope.customMiners = $scope.customMiners.filter(m => m.rdid !== $item.rdid);
+        $scope.recalculateUserPower();
+    }
+
+    $scope.recalculateUserPower = async function() {
+        if($scope.customMiners.length === 0) {
+            $scope.user_data.newPowerData = undefined;
+            const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
+            $scope.formData.power = bestHashRate.value;
+            $scope.formData.unit = bestHashRate.unit;
+            return;
+        }
+        let customMinersForBonusCalc = $scope.customMiners.filter(m => !$scope.user_data.roomData.miners.find(rm => m.simulation_id === rm.simulation_id));
+        customMinersForBonusCalc = getUniqueListBy(customMinersForBonusCalc, 'simulation_id');
+        const new_bonus = 100 * customMinersForBonusCalc.map(m => parseFloat(m.mine_bonus)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        let new_power = $scope.customMiners.map(m => parseFloat(m.mine_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        new_power = convertHashrate(new_power, 'TH/s', 'GH/s');
+        $scope.user_data.newPowerData = {
+            bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent,
+            miners: $scope.user_data.powerData.miners + new_power,
+            total: (($scope.user_data.powerData.miners + new_power) * ((new_bonus + $scope.user_data.powerData.bonus_percent) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+        };
+        const bestHashRate = chooseBestHashRateUnit($scope.user_data.newPowerData.total, 'GH/s');
+        $scope.formData.power = bestHashRate.value;
+        $scope.formData.unit = bestHashRate.unit;
+    }
+
+    
+
     $scope.getPercentualPower = getPercentualPower;
     $scope.chooseBestHashRateUnit = chooseBestHashRateUnit;
     $scope.formatDays = formatDays;
@@ -156,6 +204,16 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             return value;
         }
     };
+      
+    function getUniqueListBy(arr, key) {
+        return [...new Map(arr.map(item => [item[key], item])).values()]
+    }
+    
+    function uuidv4() {
+        return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+          (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+        );
+      }
 
     $scope.hasAnyAllocatedPower = function() {
         return $scope.currencies?.find(c => c.user_alocated_power > 0);
