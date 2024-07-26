@@ -172,6 +172,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         window.location.href = window.location.pathname+"?user=" + $item.code;
     }
 
+    $scope.reloadWithoutUser = async function() {
+        window.location.href = window.location.pathname;
+    }
+
     $scope.addMinerToSimulation = async function($item) {
         $scope.customMiners = $scope.customMiners || [];
         $scope.customMiners.push({...$item, rdid: uuidv4()});

@@ -236,7 +236,7 @@
                     </div>
                     <div class="form-group">
                         <div class="form-inline">
-                            <button class="best-coin animated-button" ng-disabled="!formData.power" ng-click="calculateAllCoins()"><i class="fa-solid fa-coins"></i> Calcular melhor moeda</button>
+                            <button class="best-coin animated-button" ng-disabled="!formData.power || formData.currency" ng-click="calculateAllCoins()"><i class="fa-solid fa-coins"></i> Calcular melhor moeda</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -254,6 +254,7 @@
                             <div ng-show="playerSearchNoResults">
                                 <i class="glyphicon glyphicon-remove"></i> Jogador não encontrado! Lembre-se que deve ser digitado o código que vem após o /p/ no link do rollercoin
                             </div>
+                            <button ng-if="isLoadedUser" ng-click="reloadWithoutUser()"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>
                 </form>
