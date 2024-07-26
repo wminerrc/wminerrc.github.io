@@ -32,7 +32,7 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
                 const merged = [...doc.querySelectorAll('.m-rollerMergeItemWrap')].map(n => ({
                     mine_name: miner.mine_name,
                     mine_level: n.querySelector('.a-iconParts-base').innerText.trim(),
-                    mine_power: parseInt(n.querySelectorAll('.a-rollerMergeData')[0].innerHTML.replace(/\D/g, '')),
+                    mine_power: parseFloat(n.querySelectorAll('.a-rollerMergeData')[0].innerHTML.replace(/[^0-9.]/g, '')),
                     mine_bonus: n.querySelectorAll('.a-rollerMergeData')[1].innerHTML.replace(/[^0-9.]/g, '')
                 }));
                 const all_miners = [{...miner, mine_level: 'Common'}, ...merged];
