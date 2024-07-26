@@ -204,8 +204,8 @@
                     <div class="form-group">
                         <label for="networkPower">Poder da Rede</label>
                         <div class="form-inline">
-                            <input type="number" id="networkPower" class="form-control" ng-model="formData.networkPower" readonly>
-                            <select id="networkUnit" class="form-control" ng-model="formData.networkUnit" ng-change="updateNetworkPowerUnit('{{formData.networkUnit}}')">
+                            <input type="number" id="networkPower" class="form-control" ng-model="formData.networkPower" disabled>
+                            <select id="networkUnit" class="form-control" ng-model="formData.networkUnit" disabled ng-change="updateNetworkPowerUnit('{{formData.networkUnit}}')">
                                 <option ng-repeat="unit in networkUnits">{{unit}}</option>
                             </select>
                         </div>
@@ -213,19 +213,22 @@
                     <div class="form-group">
                         <label for="power">Seu Poder</label>
                         <div class="form-inline">
-                            <input type="number" id="power" class="form-control" ng-model="formData.power">
-                            <select id="unit" class="form-control" ng-model="formData.unit" ng-options="unit for unit in units" ng-change="updatePowerUnit('{{formData.unit}}')"></select>
+                            <input type="text" id="power" ng-disabled="isLoadedUser" class="form-control" ng-model="formData.power">
+                            <select id="unit" class="form-control" ng-disabled="isLoadedUser" ng-model="formData.unit" ng-options="unit for unit in units" ng-change="updatePowerUnit('{{formData.unit}}')"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="blockSize">Tamanho do Bloco</label>
-                        <input type="number" step="0.01" id="blockSize" class="form-control" ng-model="formData.blockSize" readonly>
+                        <div class="form-inline">
+                            <input type="text" id="blockSize" class="form-control" ng-model="formData.blockSize" disabled>
+                            <input type="text" id="blockSizeCurrency" class="form-control" value="{{formData.currency.name}} por bloco" disabled>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="blockTime">Tempo do Bloco</label>
                         <div class="form-inline">
-                            <input type="number" id="blockTime" class="form-control" ng-model="formData.blockTime" readonly>
-                            <select id="timeUnit" class="form-control" ng-model="formData.timeUnit" ng-change="updateTimeUnit('{{formData.timeUnit}}')">
+                            <input type="number" id="blockTime" class="form-control" ng-model="formData.blockTime" disabled>
+                            <select id="timeUnit" class="form-control" ng-model="formData.timeUnit" disabled ng-change="updateTimeUnit('{{formData.timeUnit}}')">
                                 <option value="seconds">Segundos</option>
                                 <option value="minutes">Minutos</option>
                             </select>
@@ -234,6 +237,23 @@
                     <div class="form-group">
                         <div class="form-inline">
                             <button class="best-coin animated-button" ng-disabled="!formData.power" ng-click="calculateAllCoins()"><i class="fa-solid fa-coins"></i> Calcular melhor moeda</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="blockTime">Carregar jogador</label>
+                        <div class="form-inline">
+                            <input type="text" 
+                                class="form-control" 
+                                ng-model="userSearchText" 
+                                placeholder="Procurar por código..." 
+                                typeahead-wait-ms="1500"
+                                uib-typeahead="player as player.code for player in getPlayerByName($viewValue)"
+                                typeahead-no-results="playerSearchNoResults"
+                                typeahead-on-select="onSelectPlayer($item, $model, $label, $event)"
+                                typeahead-loading="loading">
+                            <div ng-show="playerSearchNoResults">
+                                <i class="glyphicon glyphicon-remove"></i> Jogador não encontrado! Lembre-se que deve ser digitado o código que vem após o /p/ no link do rollercoin
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -786,6 +806,8 @@
                     </tbody>
                 </table>
                 </form>
+            </div>
+            <div class="col-md-8 table-container">
                 <table ng-if="!formData.currency && getCurrenciesSum('user_alocated_power')  > 0" class="table table-bordered">
                     <thead>
                         <tr>

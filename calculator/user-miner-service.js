@@ -36,7 +36,11 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/public-user-profile-data/${nick}`);
             const response = await $http.get(`https://rollercoin.free.mockoapp.net/get?url=${url}`);
             if (response.status === 200) { 
-                return JSON.parse(response.data.contents).data;
+                const user = JSON.parse(response.data.contents);
+                if(user.error !== '') {
+                    return;
+                }
+                return user.data;
             } else {
                 throw new Error(`Failed to fetch user by nick: ${response.statusText}`);
             }

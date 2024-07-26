@@ -68,12 +68,18 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
      };
 
     if(typeof loaded_user === 'string' && loaded_user !== '') {
-        $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);        
-        const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
-        $scope.formData.power = bestHashRate.value;
-        $scope.formData.unit = bestHashRate.unit;
-        $scope.formData.showMiners = false;
-        $scope.formData.showRacks = false;
+        try{
+            $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);     
+            const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
+            $scope.formData.power = bestHashRate.value;
+            $scope.formData.unit = bestHashRate.unit;
+            $scope.formData.showMiners = false;
+            $scope.formData.showRacks = false;
+            $scope.isLoadedUser = true;
+        }catch(err) {
+            $scope.playerSearchNoResults = true;
+        }
+        $scope.userSearchText = loaded_user; 
     }
 
     const formatDays = (dias) => {
@@ -146,12 +152,24 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         return await MinerService.getMinersByName(name);
     }
 
+    $scope.getPlayerByName = async function(name) {
+        const foundUser = await UserMinerService.getUserByNick(name);
+        if(foundUser) {
+            return [{...foundUser, code: name}]
+        }
+        return [];
+    }
+
     $scope.onSelect = async function($item) {
         $scope.isLoading = true;
         $scope.detailed_miners = await MinerService.getDetailedMiner($item);
         $scope.chosen_mine = $item.mine_name;
         $scope.isLoading = false;
         $scope.$apply();
+    }
+
+    $scope.onSelectPlayer = async function($item) {
+        window.location.href = window.location.pathname+"?user=" + $item.code;
     }
 
     $scope.addMinerToSimulation = async function($item) {
