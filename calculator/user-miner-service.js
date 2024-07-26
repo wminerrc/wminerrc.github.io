@@ -3,7 +3,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
 
     const miner_levels = [
         'Common',
-        'Incommon',
+        'Uncommon',
         'Rare',
         'Epic',
         'Lendary',
