@@ -394,11 +394,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     $scope.calculateEarningsWithValues = calculateEarningsWithValues;
 
-    $scope.calculateAllCoins = function() {
+    $scope.calculateAllCoins = async function() {
         $scope.currencies?.forEach(c => {
             c.user_alocated_power = 100
             updateAllocatedPower(c);
         });
+        await sleep(500);
+        document.getElementById('bestCoinTable').scrollIntoView();
     }
 
     $scope.resetAlocatedPower = function() {

@@ -17,6 +17,9 @@
     <script src="user-miner-service.js"></script>
     <script src="miner-service.js"></script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .autocomplete-container {
             padding: 20px;
         }
@@ -956,7 +959,7 @@
                     <tbody class="allocated-farm">
                             <tr ng-repeat="currency in filteredCurrencies = (currencies | filter:filterFn | orderBy:orderByFarmField:reverseSort)">
                                 <td colspan="2">
-                                    <span ng-show="$first">
+                                    <span ng-show="$first" id="bestCoinTable">
                                         <i style="color:#b7b706" class="fa-solid fa-crown"></i>
                                     </span>
                                     {{currency.name}}
