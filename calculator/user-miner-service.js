@@ -6,7 +6,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
         'Uncommon',
         'Rare',
         'Epic',
-        'Lendary',
+        'Legendary',
         'Unreal',
     ];
 
