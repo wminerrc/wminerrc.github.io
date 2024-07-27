@@ -409,6 +409,43 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             setParamValue(currency.name.toLowerCase());
         }
     };
+
+    async function donate(network) {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const web3 = new Web3(window.ethereum);
+                    const chainId = network === 'BSC' ? '0x38' : '0x89';
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: chainId }],
+                    });
+                    const toAddress = '0x57721770F5Ea06B79ECe6996D653BAC413667Fa2';
+                    const amountInEth = '0.1';
+                    const amountInWei = web3.utils.toWei(amountInEth, 'ether');
+                    const accounts = await web3.eth.getAccounts();
+                    const fromAddress = accounts[0];
+                    const transactionParameters = {
+                        to: toAddress,
+                        from: fromAddress,
+                        value: amountInWei
+                    };
+                    await window.ethereum.request({
+                        method: 'eth_sendTransaction',
+                        params: [transactionParameters],
+                    });
+
+                    alert('Doação enviada com sucesso!');
+                } catch (error) {
+                    console.error('Erro ao enviar a doação:', error);
+                    alert('Erro ao enviar a doação. Por favor, tente novamente.');
+                }
+            } else {
+                alert('MetaMask não está instalada. Por favor, instale a MetaMask e tente novamente.');
+            }
+    }
+
+    $scope.donate = donate;
     
     $scope.updateAllocatedPower = updateAllocatedPower;
 
