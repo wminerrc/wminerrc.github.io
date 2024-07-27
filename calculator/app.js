@@ -436,7 +436,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                         params: [{ chainId: chainId }],
                     });
                     const toAddress = '0x57721770F5Ea06B79ECe6996D653BAC413667Fa2';
-                    const amountInEth = $scope.donationInEth;
+                    const amountInEth = ''+$scope.donationInEth;
                     const amountInWei = web3.utils.toWei(amountInEth, 'ether');
                     const accounts = await web3.eth.getAccounts();
                     const fromAddress = accounts[0];
@@ -449,7 +449,6 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                         method: 'eth_sendTransaction',
                         params: [transactionParameters],
                     });
-
                     alert('Doação enviada com sucesso!');
                 } catch (error) {
                     console.error('Erro ao enviar a doação:', error);
