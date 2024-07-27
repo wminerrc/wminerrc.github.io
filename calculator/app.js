@@ -40,6 +40,14 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         return params.get(keyName);
     }
 
+    function setParamValue(paramName, paramValue){
+        if ('URLSearchParams' in window) {
+            const url = new URL(window.location)
+            url.searchParams.set(paramName, paramValue)
+            history.pushState(null, '', url);
+        }
+    }
+
     let loaded_user = getUrlParamValue('user');
 
     
@@ -52,6 +60,30 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             'ZH/s': 1000000000000
         };
         return value * units[fromUnit] / units[toUnit];
+    };
+
+    const calculateEarningsWithValues = function(power_in_ghs, timeframe, coin, fiatCurrency) {
+
+        let earningsPerBlock = coin.blockSize;
+        let blockTimeInSeconds = coin.blockTime;
+
+        let userPowerPercentage = power_in_ghs / coin.networkPower;
+        earningsPerBlock *= userPowerPercentage;
+
+        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
+        
+        switch(timeframe) {
+            case 'block':
+                return fiatCurrency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'day':
+                return fiatCurrency === 'amount' ? earningsPerDay.toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'week':
+                return fiatCurrency === 'amount' ? (earningsPerDay * 7).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 7 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            case 'month':
+                return fiatCurrency === 'amount' ? (earningsPerDay * 30).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 30 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
+            default:
+                return 0;
+        }
     };
 
 
@@ -255,6 +287,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         c.user_block_farm_usd = 0;
         c.user_block_farm_token = 0;
         c.user_days_to_widthdraw = c.disabled_withdraw ? Number.MAX_SAFE_INTEGER : 0;
+        const param_allocation = getUrlParamValue(c.name.toLowerCase());
+        if(param_allocation && !isNaN(param_allocation)) {
+            c.user_alocated_power = parseInt(param_allocation);
+            updateAllocatedPower(c);
+        }
     });
     $scope.isLoading = false;
 
@@ -363,34 +400,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             currency.user_alocated_power_month_profit_in_usd = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'usd'));
             currency.user_alocated_power_month_profit_in_brl = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'brl'));
             currency.user_alocated_power_month_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'amount'));
+            setParamValue(currency.name.toLowerCase(), user_alocated_power);
         }
     };
     
     $scope.updateAllocatedPower = updateAllocatedPower;
 
-    const calculateEarningsWithValues = function(power_in_ghs, timeframe, coin, fiatCurrency) {
 
-        let earningsPerBlock = coin.blockSize;
-        let blockTimeInSeconds = coin.blockTime;
-
-        let userPowerPercentage = power_in_ghs / coin.networkPower;
-        earningsPerBlock *= userPowerPercentage;
-
-        let earningsPerDay = earningsPerBlock * (86400 / blockTimeInSeconds); // 86400 seconds in a day
-        
-        switch(timeframe) {
-            case 'block':
-                return fiatCurrency === 'amount' ? earningsPerBlock.toFixed(6) : coin.in_game_only ? 0 : (earningsPerBlock * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
-            case 'day':
-                return fiatCurrency === 'amount' ? earningsPerDay.toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
-            case 'week':
-                return fiatCurrency === 'amount' ? (earningsPerDay * 7).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 7 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
-            case 'month':
-                return fiatCurrency === 'amount' ? (earningsPerDay * 30).toFixed(6) : coin.in_game_only ? 0 : (earningsPerDay * 30 * exchangeRates[coin.name][fiatCurrency]).toFixed(2);
-            default:
-                return 0;
-        }
-    };
 
     $scope.calculateEarningsWithValues = calculateEarningsWithValues;
 
