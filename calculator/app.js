@@ -52,7 +52,22 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
+    $scope.donationValue = 2;
+    $scope.donationCurrency = 'U$';
+    calculateDonation();
+
     let loaded_user = getUrlParamValue('user');
+
+    function calculateDonation() {
+        if(!isNaN($scope.donationValue) && $scope.donationCurrency) {
+            const currency = $scope.donationCurrency === 'U$' ? 'usd' : 'brl';
+            $scope.donationInBnb = ($scope.donationValue / exchangeRates['BNB'][currency]).toFixed(3)
+            $scope.donationInMatic = ($scope.donationValue / exchangeRates['MATIC'][currency]).toFixed(2)
+            $scope.donationInEth = $scope.donationValue / exchangeRates['ETH'][currency]
+        }
+    }
+
+    $scope.calculateDonation = calculateDonation;
 
     
     const convertHashrate = (value, fromUnit, toUnit) => {
@@ -421,7 +436,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                         params: [{ chainId: chainId }],
                     });
                     const toAddress = '0x57721770F5Ea06B79ECe6996D653BAC413667Fa2';
-                    const amountInEth = '0.1';
+                    const amountInEth = $scope.donationInEth;
                     const amountInWei = web3.utils.toWei(amountInEth, 'ether');
                     const accounts = await web3.eth.getAccounts();
                     const fromAddress = accounts[0];

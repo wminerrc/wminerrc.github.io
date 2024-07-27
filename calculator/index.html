@@ -1002,9 +1002,58 @@
     <br/>
     <br/>
     <br/>
-    <button ng-click="donate('BSC')">Doar na BSC</button>
-    <button ng-click="donate('POLYGON')">Doar na Polygon</button>
-    <p style="text-align: center;">☕ Quer pagar um café para o moderador? <u>[BSC SmartChain]</u> <b>0x57721770F5Ea06B79ECe6996D653BAC413667Fa2</b></p>
+    <div style="
+    background-color: white;
+    width: 40%;
+    margin-left: 30%;
+    height: 100px;
+    display: flex;
+">
+        <img style="width: 14%;" src="images/dev-working.gif">
+<div style="
+    margin-top: 15px;
+    width: 130px;
+">Quer pagar um café para o desenvolvedor dessa calculadora?
+</div><div style="
+    margin-top: 35px;
+    margin-left: 40px;
+">
+<label>Valor</label>
+    <input type="text" ng-model="donationValue" 
+    ng-change="calculateDonation()"
+    style="
+    width: 60px;
+    align-content: right;
+"><select
+    ng-model="donationCurrency"
+    ng-change="calculateDonation()"
+     style="
+    margin-left: 4px;
+    align-content: right;
+    width: 50px;
+    height: 28px;
+"><option>U$</option><option>R$</option></select>
+
+</div>
+
+<div style="
+    margin-top: 35px;
+    margin-left: 40px;
+">
+    <button>Doar {{donationInBnb}} BNB</button>
+</div>
+<div style="
+    margin-top: 35px;
+    margin-left: 40px;
+">
+    <button>Doar {{donationInMatic}} Matic</button>
+</div>
+
+    </div>
+
+    </div>
+
+    <p style="text-align: center;">Você também pode doar diretamente em: <b>0x57721770F5Ea06B79ECe6996D653BAC413667Fa2</b></p>
     <footer>
         <p>&copy; 2024 Calculadora de Mineração Wminer. Desenvolvida pela e para a comunidade.</p>
     </footer>
