@@ -61,9 +61,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     function calculateDonation() {
         if(!isNaN($scope.donationValue) && $scope.donationCurrency) {
             const currency = $scope.donationCurrency === 'U$' ? 'usd' : 'brl';
-            $scope.donationInBnb = ($scope.donationValue / exchangeRates['BNB'][currency]).toFixed(3)
-            $scope.donationInMatic = ($scope.donationValue / exchangeRates['MATIC'][currency]).toFixed(2)
-            $scope.donationInEth = ($scope.donationValue / exchangeRates['ETH'][currency]).toFixed(18)
+            $scope.donationInBnb = ($scope.donationValue / exchangeRates['BNB'][currency])
+            $scope.donationInMatic = ($scope.donationValue / exchangeRates['MATIC'][currency])
+            $scope.donationInEth = ($scope.donationValue / exchangeRates['ETH'][currency])
         }
     }
 
@@ -431,13 +431,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const web3 = new Web3(window.ethereum);
                     const chainId = network === 'BSC' ? '0x38' : '0x89';
+                    const donation = network === 'BSC' ? donationInBnb.toFixed(18) : donationInMatic.toFixed(18)
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
                         params: [{ chainId: chainId }],
                     });
                     const toAddress = '0x57721770F5Ea06B79ECe6996D653BAC413667Fa2';
-                    const amountInEth = ''+$scope.donationInEth;
-                    const amountInWei = web3.utils.toWei(amountInEth, 'ether');
+                    const amountInWei = web3.utils.toWei(''+donation, 'ether');
                     const accounts = await web3.eth.getAccounts();
                     const fromAddress = accounts[0];
                     const transactionParameters = {

@@ -1040,13 +1040,13 @@
     margin-top: 35px;
     margin-left: 40px;
 ">
-    <button ng-click="donate('BSC')">Doar {{donationInBnb}} BNB</button>
+    <button ng-click="donate('BSC')">Doar {{donationInBnb.toFixed(3)}} BNB</button>
 </div>
 <div style="
     margin-top: 35px;
     margin-left: 40px;
 ">
-    <button ng-click="donate('POLYGON')">Doar {{donationInMatic}} Matic</button>
+    <button ng-click="donate('POLYGON')">Doar {{donationInMatic.toFixed(3)}} Matic</button>
 </div>
 
     </div>
