@@ -431,7 +431,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const web3 = new Web3(window.ethereum);
                     const chainId = network === 'BSC' ? '0x38' : '0x89';
-                    const donation = network === 'BSC' ? donationInBnb.toFixed(18) : donationInMatic.toFixed(18)
+                    const donation = network === 'BSC' ? $scope.donationInBnb.toFixed(18) : $scope.donationInMatic.toFixed(18)
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
                         params: [{ chainId: chainId }],
