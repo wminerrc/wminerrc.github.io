@@ -63,7 +63,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             const currency = $scope.donationCurrency === 'U$' ? 'usd' : 'brl';
             $scope.donationInBnb = ($scope.donationValue / exchangeRates['BNB'][currency]).toFixed(3)
             $scope.donationInMatic = ($scope.donationValue / exchangeRates['MATIC'][currency]).toFixed(2)
-            $scope.donationInEth = $scope.donationValue / exchangeRates['ETH'][currency]
+            $scope.donationInEth = $scope.donationValue / exchangeRates['ETH'][currency].toFixed(18)
         }
     }
 
@@ -443,7 +443,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                     const transactionParameters = {
                         to: toAddress,
                         from: fromAddress,
-                        value: amountInWei
+                        value: web3.utils.toHex(amountInWei)
                     };
                     await window.ethereum.request({
                         method: 'eth_sendTransaction',
