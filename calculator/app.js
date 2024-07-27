@@ -43,7 +43,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     function setParamValue(paramName, paramValue){
         if ('URLSearchParams' in window) {
             const url = new URL(window.location)
-            url.searchParams.set(paramName, paramValue)
+            if(!paramValue) {
+                url.searchParams.delete(paramName)
+            }else {
+                url.searchParams.set(paramName, paramValue)
+            }
             history.pushState(null, '', url);
         }
     }
@@ -401,6 +405,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             currency.user_alocated_power_month_profit_in_brl = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'brl'));
             currency.user_alocated_power_month_profit_in_cripto = parseFloat(calculateEarningsWithValues(percentual_user_alocated_power, 'month', currency, 'amount'));
             setParamValue(currency.name.toLowerCase(), user_alocated_power);
+        }else {
+            setParamValue(currency.name.toLowerCase());
         }
     };
     
