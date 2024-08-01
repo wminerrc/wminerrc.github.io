@@ -58,6 +58,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     let loaded_user = getUrlParamValue('user');
 
+    let loaded_miners = getUrlParamValue('miners');
+
     function calculateDonation() {
         if(!isNaN($scope.donationValue) && $scope.donationCurrency) {
             const currency = $scope.donationCurrency === 'U$' ? 'usd' : 'brl';
@@ -249,7 +251,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     }
 
     $scope.onSelectPlayer = async function($item) {
-        window.location.href = window.location.pathname+"?user=" + $item.code;
+        let  new_url = window.location.pathname+"?user=" + $item.code;
+        if(loaded_miners) {
+            new_url+= '&miners=' + loaded_miners;
+        }
+        window.location.href = new_url;
     }
 
     $scope.reloadWithoutUser = async function() {
@@ -300,7 +306,16 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         $scope.formData.unit = bestHashRate.unit;
     }
 
-    
+    if(typeof loaded_miners === 'string' && loaded_miners !== '') {
+        const all_miners = await MinerService.getAllMinersByFilter(); 
+        const miners_ids = loaded_miners.split(',');
+        const load_these = miners_ids.map(id => all_miners.find(m => m.miner_id === id));
+        $scope.customMiners = [];
+        load_these.forEach(m =>  $scope.customMiners.push({...m, rdid: uuidv4()}));
+        if(loaded_user) {
+            $scope.recalculateUserPower();
+        }
+    }
 
     $scope.getPercentualPower = getPercentualPower;
     $scope.chooseBestHashRateUnit = chooseBestHashRateUnit;

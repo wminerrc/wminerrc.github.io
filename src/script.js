@@ -279,7 +279,7 @@ const template = `
     </div>
     <div id="balao" class="balao">
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>
-        <a href="https://forms.gle/BJwtTHr1Zrb216uA9" target="_blank"><p>{{bestDiscount}}% de desconto! Preencha o nosso formulario, ajude o canal e ainda participe de sorteios insanos.</p></a>
+        <a href="{{calculate_url}}" target="_blank"><p>Quer calcular quanto esse evento traria para a sua salinha? Clique aqui</p></a>
     </div>
 `
 
@@ -332,9 +332,9 @@ window.onload = () => {
         });
     });
 
-    // setTimeout(function() {
-    //     balao.style.display = "block";
-    //   }, 4000);
+     setTimeout(function() {
+         balao.style.display = "block";
+        }, 4000);
 
       setTimeout(function() {
         balao2.style.display = "block";
