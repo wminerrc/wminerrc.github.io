@@ -211,10 +211,39 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         return [];
     }
 
+    $scope.itemsPerPage = 10;
+    $scope.currentPage = 1;
+
+    $scope.allMinerMinBonusSearch = 0;
+    $scope.allMinerMaxBonusSearch = 100;
+    $scope.allMinerMinBonusRange = 0;
+    $scope.allMinerMaxBonusRange = 100;
+    $scope.allMinersRarity = 'all';
+    $scope.allMinerPosessionStatus = 'all';
+    $scope.allMinerNegotiableStatus = 'all';
+
+    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus) {
+        if($scope.formData.showAllMiners) {
+            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable);
+            foundMiners.forEach(m => {
+                m.already_have = $scope.user_data.roomData.miners.find(mm => mm.miner_id === m.miner_id);
+            });
+            if(allMinerPosessionStatus === 'mine') {
+                foundMiners = foundMiners.filter(m => m.already_have);
+            }else if(allMinerPosessionStatus === 'not_mine') {
+                foundMiners = foundMiners.filter(m => !m.already_have);
+            }
+            $scope.allMiners = foundMiners;
+            $scope.$apply();
+        }else {
+            $scope.allMiners = [];
+        }
+    }
+
     $scope.onSelect = async function($item) {
         $scope.isLoading = true;
         $scope.detailed_miners = await MinerService.getDetailedMiner($item);
-        $scope.chosen_mine = $item.mine_name;
+        $scope.chosen_mine = $item.name.en;
         $scope.isLoading = false;
         $scope.$apply();
     }
@@ -225,6 +254,17 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     $scope.reloadWithoutUser = async function() {
         window.location.href = window.location.pathname;
+    }
+
+    $scope.openBuyLink = async function(item) {
+        if(!localStorage.getItem('alreadyDonatedMessage')) {
+            localStorage.setItem('alreadyDonatedMessage', 'true');
+            if(confirm('Te ajudei a tomar essa decisão de compra? Considere fazer uma contribuição para manter o desenvolvimento desse projeto')) {
+                window.scrollTo(0, document.body.scrollHeight);
+                return;
+            }
+        }
+        window.open(`https://rollercoin.com/marketplace/buy/miner/${item.miner_id}`,'_blank');
     }
 
     $scope.addMinerToSimulation = async function($item) {
@@ -246,11 +286,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             $scope.formData.unit = bestHashRate.unit;
             return;
         }
-        let customMinersForBonusCalc = $scope.customMiners.filter(m => !$scope.user_data.roomData.miners.find(rm => m.simulation_id === rm.simulation_id));
-        customMinersForBonusCalc = getUniqueListBy(customMinersForBonusCalc, 'simulation_id');
-        const new_bonus = 100 * customMinersForBonusCalc.map(m => parseFloat(m.mine_bonus)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-        let new_power = $scope.customMiners.map(m => parseFloat(m.mine_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-        new_power = convertHashrate(new_power, 'TH/s', 'GH/s');
+        let customMinersForBonusCalc = $scope.customMiners.filter(m => !$scope.user_data.roomData.miners.find(rm => m.miner_id === rm.miner_id));
+        customMinersForBonusCalc = getUniqueListBy(customMinersForBonusCalc, 'miner_id');
+        const new_bonus = customMinersForBonusCalc.map(m => parseFloat(m.bonus_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        let new_power = $scope.customMiners.map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         $scope.user_data.newPowerData = {
             bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent,
             miners: $scope.user_data.powerData.miners + new_power,
