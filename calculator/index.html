@@ -268,6 +268,10 @@
                             <button ng-if="isLoadedUser" ng-click="reloadWithoutUser()"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>
+                    <div ng-if="isLoadedUser" class="form-group">
+                        <input type="checkbox" ng-model="keepUser" ng-change="updateKeepUser(keepUser)" name="keep_user"/>
+                        <label for="keep_user">Manter carregado</label>
+                    </div>
                 </form>
             </div>
             <div ng-if="user_data" class="col-md-8 table-container">
@@ -353,7 +357,9 @@
                                 {{(user_data.powerData.bonus_percent / 100)}}%
                             </td>
                             <td style="text-align: center">
-                                {{user_data.roomData.rooms.length}}/4
+                                {{user_data.roomData.rooms.length}}/4 salas<br/>
+                                {{user_data.occupied_racks_cells}}/{{user_data.all_racks_cells}} células ocupadas<br/>
+                                {{user_data.all_racks}}/{{user_data.all_racks_space}} racks alocados
                             </td>
                         </tr>
                     </tbody>

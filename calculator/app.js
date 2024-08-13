@@ -57,6 +57,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     calculateDonation();
 
     let loaded_user = getUrlParamValue('user');
+    loaded_user = loaded_user || localStorage.getItem('keep_loaded_user');
 
     let loaded_miners = getUrlParamValue('miners');
 
@@ -122,7 +123,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     if(typeof loaded_user === 'string' && loaded_user !== '') {
         try{
-            $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);     
+            $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);   
+            $scope.user_data.all_racks_cells = $scope.user_data.roomData.racks.map(r => r.cells).reduce((a, b) => a + b, 0);
+            $scope.user_data.occupied_racks_cells = $scope.user_data.roomData.miners.map(m => m.width).reduce((a, b) => a + b, 0);
+            $scope.user_data.all_racks_space = $scope.user_data.roomData.rooms.map(r => (r.room_info.cols / 2) * r.room_info.rows).reduce((a, b) => a + b, 0);
+            $scope.user_data.all_racks = $scope.user_data.roomData.racks.length;
             const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
             $scope.formData.power = bestHashRate.value;
             $scope.formData.unit = bestHashRate.unit;
@@ -131,6 +136,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             $scope.isLoadedUser = true;
         }catch(err) {
             $scope.playerSearchNoResults = true;
+        }
+        if(loaded_user !== localStorage.getItem('keep_loaded_user')) {
+            localStorage.removeItem('keep_loaded_user');
         }
         $scope.userSearchText = loaded_user; 
     }
@@ -224,6 +232,16 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     $scope.allMinerPosessionStatus = 'all';
     $scope.allMinerNegotiableStatus = 'all';
 
+    $scope.keepUser = localStorage.getItem('keep_loaded_user') ? true : false;
+
+    $scope.updateKeepUser = async function(keepUser) {
+        if(keepUser) {
+            localStorage.setItem('keep_loaded_user', $scope.userSearchText);
+        }else {
+            localStorage.removeItem('keep_loaded_user');
+        }
+    }
+
     $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus) {
         if($scope.formData.showAllMiners) {
             let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable);
@@ -259,6 +277,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     }
 
     $scope.reloadWithoutUser = async function() {
+        localStorage.removeItem('keep_loaded_user');
         window.location.href = window.location.pathname;
     }
 
