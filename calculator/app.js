@@ -303,6 +303,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         $scope.recalculateUserPower();
     }
 
+    const calcPercentIncrease = (a, b) => b === 0 ? Infinity : ((a - b) / b) * 100;
+
     $scope.recalculateUserPower = async function() {
         if($scope.customMiners.length === 0) {
             $scope.user_data.newPowerData = undefined;
@@ -317,9 +319,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         let new_power = $scope.customMiners.map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         $scope.user_data.newPowerData = {
             bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent,
+            new_bonus_percent : new_bonus,
+            new_power : new_power,
             miners: $scope.user_data.powerData.miners + new_power,
             total: (($scope.user_data.powerData.miners + new_power) * ((new_bonus + $scope.user_data.powerData.bonus_percent) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
         };
+        $scope.user_data.newPowerData.new_total = $scope.user_data.newPowerData.total - $scope.user_data.powerData.total;
+        $scope.user_data.newPowerData.new_total_percent = calcPercentIncrease($scope.user_data.newPowerData.total, $scope.user_data.powerData.total);
         const bestHashRate = chooseBestHashRateUnit($scope.user_data.newPowerData.total, 'GH/s');
         $scope.formData.power = bestHashRate.value;
         $scope.formData.unit = bestHashRate.unit;

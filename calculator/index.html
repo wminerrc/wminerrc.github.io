@@ -329,11 +329,12 @@
                             <td style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.games, 'GH/s').unit}}
                             </td>
-                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                            <td ng-if="user_data.newPowerData && user_data.newPowerData.new_power > 0" style="text-align: center">
                                 <s>{{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').unit}}</s></br>
-                                {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').unit}}
+                                {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.miners, 'GH/s').unit}}<br>
+                                <i class="fa-solid fa-arrow-up"></i> {{chooseBestHashRateUnit(user_data.newPowerData.new_power, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.new_power, 'GH/s').unit}}<br>
                             </td>
-                            <td ng-if="!user_data.newPowerData" style="text-align: center">
+                            <td ng-if="!user_data.newPowerData || user_data.newPowerData.new_power <= 0" style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.miners, 'GH/s').unit}}
                             </td>
                             <td style="text-align: center">
@@ -342,18 +343,20 @@
                             <td style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.temp, 'GH/s').unit}}
                             </td>
-                            <td ng-if="!user_data.newPowerData" style="text-align: center">
+                            <td ng-if="!user_data.newPowerData || user_data.newPowerData.new_total <= 0" style="text-align: center">
                                 {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').unit}}
                             </td>
-                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                            <td ng-if="user_data.newPowerData && user_data.newPowerData.new_total > 0" style="text-align: center">
                                 <s>{{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.powerData.total, 'GH/s').unit}}</s></br>
-                                {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').unit}}
+                                {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.total, 'GH/s').unit}}<br>
+                                <i class="fa-solid fa-arrow-up"></i> {{chooseBestHashRateUnit(user_data.newPowerData.new_total, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(user_data.newPowerData.new_total, 'GH/s').unit}} ({{(user_data.newPowerData.new_total_percent.toFixed(2))}}%)
                             </td>
-                            <td ng-if="user_data.newPowerData" style="text-align: center">
+                            <td ng-if="user_data.newPowerData && user_data.newPowerData.new_bonus_percent > 0" style="text-align: center">
                                 <s>{{(user_data.powerData.bonus_percent / 100)}}%</s></br>
-                                {{(user_data.newPowerData.bonus_percent / 100)}}%
+                                {{(user_data.newPowerData.bonus_percent / 100)}}%<br>
+                                <i class="fa-solid fa-arrow-up"></i> {{(user_data.newPowerData.new_bonus_percent / 100)}}%
                             </td>
-                            <td ng-if="!user_data.newPowerData" style="text-align: center">
+                            <td ng-if="!user_data.newPowerData || user_data.newPowerData.new_bonus_percent <= 0" style="text-align: center">
                                 {{(user_data.powerData.bonus_percent / 100)}}%
                             </td>
                             <td style="text-align: center">
@@ -1208,6 +1211,7 @@
     <div style="
     background-color: white;
     width: 40%;
+    min-width:800px;
     margin-left: 30%;
     height: 100px;
     display: flex;
