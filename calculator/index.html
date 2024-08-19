@@ -791,6 +791,9 @@
                                     </span>
                                 </a>
                             </th>
+                            <th style="text-align: center">
+                                Local
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -806,6 +809,8 @@
                             <td>{{chooseBestHashRateUnit(miner.power, 'GH/s').value.toFixed(2)}} {{chooseBestHashRateUnit(miner.power, 'GH/s').unit}}</td>
                             <td>{{(miner.bonus_percent / 100)}}%</td>
                             <td>{{miner.width}}</td>
+                            <td>{{getMinerLocation(miner)}}</td>
+                            
                         </tr>
                     </tbody>
                 </table>

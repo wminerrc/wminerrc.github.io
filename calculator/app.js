@@ -556,6 +556,18 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         });
     }
 
+    const ordinalNum = num => ['primeira', 'segunda', 'terceira', 'quarta', 'quinta', 'sexta', 'sétima', 'oitava', 'nona', 'décima'][num - 1];
+    const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+    $scope.getMinerLocation = function(miner) {
+        const miner_rack = $scope.user_data.roomData.racks.find(r => r._id === miner.placement.user_rack_id);
+        const room_location = miner_rack.placement.room_level+1;
+        const rack_row =  miner_rack.placement.y + 1;
+        const rack_column =  miner_rack.placement.x + 1;
+        return `${capitalize(ordinalNum(room_location))} sala, ${ordinalNum(rack_row)} fileira, ${ordinalNum(rack_column)} rack`;
+    }
+
+
     $scope.calculateEarnings = function(timeframe, currency) {
         if (!$scope.formData.currency || !$scope.formData.blockSize || !$scope.formData.blockTime) {
             return 0;
