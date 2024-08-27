@@ -56,6 +56,124 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     $scope.donationCurrency = 'U$';
     calculateDonation();
 
+    $scope.collections = [
+        {
+            id: 1,
+            name: "Miners of Infinity",
+            miners: [
+                "669fd40b8055d6def342d91a",
+                "669fcfc58055d6def342d1ab",
+                "669fd3b78055d6def342d8bd",
+                "669fd1fd8055d6def342d53d",
+                "669fd3538055d6def342d81c",
+                "669fd35f8055d6def342d865",
+                "669fd1788055d6def342d420",
+                "669fd0e78055d6def342d31c",
+                "669fd08e8055d6def342d2d1"
+            ]
+        },
+        {
+            id: 2,
+            name: "Roller Football League",
+            miners: [
+                "6668980bdddadd0605fdaa2e",
+                "6668963edddadd0605fda7ac",
+                "666896c5dddadd0605fda8bb",
+                "6668973cdddadd0605fda94f",
+                "66689701dddadd0605fda905",
+                "66689684dddadd0605fda7f6",
+                "66689843dddadd0605fdaa78",
+                "666897d2dddadd0605fda9e4",
+                "66689794dddadd0605fda99a",
+                "6668991fdddadd0605fdab24"
+            ]
+        },
+        {
+            id: 3,
+            name: "Music Festival",
+            miners: [
+                "661466bcd6c322a6c7c344ba",
+                "661466e1d6c322a6c7c34504",
+                "661467e8d6c322a6c7c346a7",
+                "6614674ad6c322a6c7c3465b",
+                "6614672ad6c322a6c7c34612",
+                "66146919d6c322a6c7c3488d",
+                "661468f7d6c322a6c7c34844",
+                "66146703d6c322a6c7c3454d",
+                "66146868d6c322a6c7c3476d",
+                "66146973d6c322a6c7c348d8"
+            ]
+        },
+        {
+            id: 4,
+            name: "Interstellar Armada",
+            miners: [
+                "654a1eb4d23e8edde9341e5f",
+                "654a1f91d23e8edde9341eb1",
+                "654a21aed23e8edde93420c9",
+                "654a223cd23e8edde9342146",
+                "654a210cd23e8edde9341fd6",
+                "654a2382d23e8edde934216a",
+                "654a253ad23e8edde9342353",
+                "654a24ced23e8edde934228f",
+                "654a22d9d23e8edde9342158",
+                "654a1e06d23e8edde9341dfe"
+            ]
+        },
+        {
+            id: 5,
+            name: "Yatch Club",
+            miners: [
+                "64c3a0bd31ec0b205c25efd6",
+                "64c39ebd31ec0b205c25ec50",
+                "64c39e7731ec0b205c25ebcd",
+                "64c3a1fa31ec0b205c25f14b",
+                "64c39f5b31ec0b205c25ed8b",
+                "64c3a05a31ec0b205c25ef44",
+                "64c3a15d31ec0b205c25f0f9",
+                "64c3a29131ec0b205c25f1dd",
+                "64c3a23e31ec0b205c25f18f",
+                "64c254c20c6fb1d2237a1391"
+            ]
+        },
+        {
+            id: 6,
+            name: "Ultimate Blaster",
+            miners: [
+                "65affbbf43dcad8f6d0f7a52",
+                "65aff78243dcad8f6d0f79b6",
+                "65affb6d43dcad8f6d0f7a36",
+                "65affd6543dcad8f6d0f7acd",
+                "65affccf43dcad8f6d0f7a94",
+                "65affc7f43dcad8f6d0f7a78",
+                "65affb1e43dcad8f6d0f7a1a",
+                "65aff67743dcad8f6d0f7962",
+                "65affd1843dcad8f6d0f7ab0",
+                "65b0f72543dcad8f6d0fa7ff"
+            ]
+        },
+        {
+            id: 7,
+            name: "Moto Gang Club",
+            miners: [
+                "644bbdd2648294b4642f3695",
+                "644bbece648294b4642f3697",
+                "644bbf0a648294b4642f3698",
+                "644bbe15648294b4642f3696",
+                "644bc010648294b4642f369d",
+                "644bbf6f648294b4642f369a",
+                "644bbf44648294b4642f3699",
+                "644bbfb1648294b4642f369b",
+                "644bbfe6648294b4642f369c",
+                "644bb5de648294b4642f368f",
+                "644bb270648294b4642f368e",
+                "644bb225648294b4642f368d",
+                "644bb671648294b4642f3690"
+
+            ]
+        },
+    ];
+
     let loaded_user = getUrlParamValue('user');
     loaded_user = loaded_user || localStorage.getItem('keep_loaded_user');
 
@@ -231,6 +349,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     $scope.allMinersRarity = 'all';
     $scope.allMinerPosessionStatus = 'all';
     $scope.allMinerNegotiableStatus = 'all';
+    $scope.allMinerCollectionId = "-1";
 
     $scope.keepUser = localStorage.getItem('keep_loaded_user') ? true : false;
 
@@ -242,9 +361,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
-    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus) {
+    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus, allMinerCollectionId) {
         if($scope.formData.showAllMiners) {
-            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable);
+            let ids = [];
+            if(allMinerCollectionId && parseInt(allMinerCollectionId) !== -1) {
+                ids = $scope.collections.find(c => c.id === parseInt(allMinerCollectionId))?.miners ?? [];
+            }
+            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, ids);
             foundMiners.forEach(m => {
                 m.already_have = $scope.user_data.roomData.miners.find(mm => mm.miner_id === m.miner_id);
             });

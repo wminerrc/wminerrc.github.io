@@ -11,7 +11,7 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
         return [JSON.parse(JSON.stringify(miner))].concat(JSON.parse(JSON.stringify(merge_miners)).filter(m => m.filename === miner.filename).sort((a,b) => a.level - b.level));
     };
 
-    this.getAllMinersByFilter = async function(name, rarity, bonus, negotiable) {
+    this.getAllMinersByFilter = async function(name, rarity, bonus, negotiable, ids) {
         let miners = JSON.parse(JSON.stringify(basic_miners)).concat(JSON.parse(JSON.stringify(merge_miners)));
 
         if(typeof name === 'string' && name !== '') {
@@ -63,7 +63,9 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
             }
             
         }
-        
+        if(ids?.length) {
+            miners = miners.filter(m => ids.includes(m.miner_id));
+        }
         return miners
             .sort((a,b) =>  a.name.en.toLowerCase() - b.name.en.toLowerCase()  || a.level - b.level );
     };
