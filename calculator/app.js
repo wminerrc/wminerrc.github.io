@@ -69,7 +69,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                 "669fd35f8055d6def342d865",
                 "669fd1788055d6def342d420",
                 "669fd0e78055d6def342d31c",
-                "669fd08e8055d6def342d2d1"
+                "669fd08e8055d6def342d2d1",
+                "669fd6a88055d6def342da6b",
+                "66a112918055d6def3474184",
+                "66a112918055d6def347418c"
             ]
         },
         {
@@ -85,7 +88,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                 "66689843dddadd0605fdaa78",
                 "666897d2dddadd0605fda9e4",
                 "66689794dddadd0605fda99a",
-                "6668991fdddadd0605fdab24"
+                "6668991fdddadd0605fdab24",
+                "6668991fdddadd0605fdab27",
+                "6668991fdddadd0605fdab2d"
             ]
         },
         {
@@ -339,7 +344,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         return [];
     }
 
-    $scope.itemsPerPage = 10;
+    $scope.itemsPerPage = 15;
     $scope.currentPage = 1;
 
     $scope.allMinerMinBonusSearch = 0;
