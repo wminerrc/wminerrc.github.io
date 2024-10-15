@@ -73,31 +73,7 @@ const template = `
             </tr>
         </thead>
         <tbody>
-            {{#rewards}}
-                <tr>
-                    <td style="text-align: center;">{{level}}</td>
-                    <td style="text-align: center;">{{total}}</td>
-                    <td style="text-align: center;">{{xp}}</td>
-                    <td>{{label}}</td>
-                    <td style="text-align: center; position: relative;">
-                    {{#image_lvl_content}}
-                        <img src='{{image_lvl_content}}' style='left: 2px;position: absolute;top: 25px;'/>
-                    {{/image_lvl_content}}
-                    <img src='{{image_content}}' width="80px" height="auto"/>
-                    {{^can_be_sold}}
-                        <div style="
-                            height: 10px;
-                            width: 100px;
-                            background-color: red;
-                            font-size: 0.6em;
-                            font-weight: bold;
-                            color: white;
-                        ">INEGOCIAVEL</div>
-                    {{/can_be_sold}}
-                    </td>
-                </tr>
-            {{/rewards}}
-                <tr>
+                        <tr>
                     <td colspan="4" style="text-align: right;">TOTAL MINERS</td>
                     <td colspan="2" style="text-align: center;">{{summary.total_miners}}</td>
                 </tr>
@@ -129,6 +105,30 @@ const template = `
                     <td colspan="4" style="text-align: right;">TOTAL XP</td>
                     <td colspan="2" style="text-align: center;">{{summary.total_xp}}</td>
                 </tr>
+            {{#rewards}}
+                <tr>
+                    <td style="text-align: center;">{{level}}</td>
+                    <td style="text-align: center;">{{total}}</td>
+                    <td style="text-align: center;">{{xp}}</td>
+                    <td>{{label}}</td>
+                    <td style="text-align: center; position: relative;">
+                    {{#image_lvl_content}}
+                        <img src='{{image_lvl_content}}' style='left: 2px;position: absolute;top: 25px;'/>
+                    {{/image_lvl_content}}
+                    <img src='{{image_content}}' width="80px" height="auto"/>
+                    {{^can_be_sold}}
+                        <div style="
+                            height: 10px;
+                            width: 100px;
+                            background-color: red;
+                            font-size: 0.6em;
+                            font-weight: bold;
+                            color: white;
+                        ">INEGOCIAVEL</div>
+                    {{/can_be_sold}}
+                    </td>
+                </tr>
+            {{/rewards}}
         </tbody>
     </table>
     </div>
