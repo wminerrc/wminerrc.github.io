@@ -373,13 +373,13 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
-    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus, allMinerCollectionId) {
+    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus, allMinerCollectionId, minMinerPower, maxMinerPower) {
         if($scope.formData.showAllMiners) {
             let ids = [];
             if(allMinerCollectionId && parseInt(allMinerCollectionId) !== -1) {
                 ids = $scope.collections.find(c => c.id === parseInt(allMinerCollectionId))?.miners ?? [];
             }
-            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, ids);
+            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, ids, minMinerPower, maxMinerPower);
             foundMiners.forEach(m => {
                 m.already_have = $scope.user_data.roomData.miners.find(mm => mm.miner_id === m.miner_id);
             });
@@ -688,6 +688,17 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         });
         await sleep(500);
         document.getElementById('bestCoinTable').scrollIntoView();
+    }
+
+    $scope.bestBuys = async function() {
+        $scope.formData.showAllMiners = true;
+        $scope.allMinerNegotiableStatus = 'negotiable';
+        $scope.allMinerPosessionStatus = 'not_mine';
+        $scope.orderByAllMinersField='supply';
+        $scope.reverseAllMinersSort = true;
+        $scope.allMinerMinBonusSearch = 2;
+        $scope.filterAllMiners($scope.allMinerNameSearch, $scope.allMinersRarity, {min:$scope.allMinerMinBonusSearch, max:$scope.allMinerMaxBonusSearch}, $scope.allMinerNegotiableStatus, $scope.allMinerPosessionStatus, $scope.allMinerCollectionId, $scope.allMinerMinPowerSearch, $scope.allMinerMaxPowerSearch)
+        $scope.$apply();
     }
 
     $scope.resetAlocatedPower = function() {
