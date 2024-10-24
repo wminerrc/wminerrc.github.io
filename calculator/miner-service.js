@@ -2,6 +2,8 @@ let servicez = angular.module('miningApp');
 servicez.service('MinerService', ['$http', '$q', function($http, $q) {
     const basic_miners = window.basic_miners;
     const merge_miners = window.merge_miners;
+    basic_miners.forEach(m => m.craft_cost_diff = m.craft_cost_diff || 0);
+    merge_miners.forEach(m => m.craft_cost_diff = m.craft_cost_diff || 0);
 
     this.getMinersByName = async function(name) {
         return JSON.parse(JSON.stringify(basic_miners)).filter(m => m.name.en.toLowerCase().includes(name.toLowerCase()));
