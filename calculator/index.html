@@ -657,6 +657,9 @@
                                         <span ng-if="item.component_type === 'mutation_components'"><img width="20" height="20" src="https://static.rollercoin.com/static/img/storage/mutation_components/{{item._id}}.png?v=1.0.1"/> {{item.count}} <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'mutation_component')" class="fas fa-external-link-alt"></i></span>
                                         <span ng-if="item.component_type === 'miners'"><img width="20" height="20" src="https://rollercoin.com/static/images/basic_miner.39e37c9f62068115758b..svg"/> {{item.count}} <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'miner')" class="fas fa-external-link-alt"></i></span>
                                     </p>
+                                    <p ng-repeat="item in miner.old_craft_items">
+                                        <span ng-if="item.component_type === 'mutation_components'"><img width="20" height="20" src="https://static.rollercoin.com/static/img/storage/mutation_components/{{item._id}}.png?v=1.0.1"/> <s>{{item.count}}</s> <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'mutation_component')" class="fas fa-external-link-alt"></i></span>
+                                    </p>
                                 </td>
                                 <td style="text-align: center">
                                     {{miner.craft_cost_diff}}%
