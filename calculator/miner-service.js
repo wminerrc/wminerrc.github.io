@@ -3,8 +3,10 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
     const basic_miners = window.basic_miners;
     const merge_miners = window.merge_miners;
     basic_miners.forEach(m => m.craft_cost_diff = m.craft_cost_diff || 0);
+    basic_miners.forEach(m => m.recipe_cost = 0);
     merge_miners.forEach(m => m.craft_cost_diff = m.craft_cost_diff || 0);
-
+    merge_miners.forEach(m => m.recipe_cost = m.craft_items.filter(i => i.component_type === 'mutation_components').map(r => window.components.find(c => c.id === r._id).avg_price * r.count ));
+    merge_miners.forEach(m => m.recipe_cost = parseFloat((m.recipe_cost / 1000000).toFixed(2)));
     this.getMinersByName = async function(name) {
         return JSON.parse(JSON.stringify(basic_miners)).filter(m => m.name.en.toLowerCase().includes(name.toLowerCase()));
     };

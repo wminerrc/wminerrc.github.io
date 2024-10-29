@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
     <script src="data/basic_miners.js"></script>
     <script src="data/merge_miners.js"></script>
+    <script src="data/components.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
     <script src="user-miner-service.js"></script>
@@ -573,9 +574,19 @@
                                     Nome
                                 </th>
                                 <th style="text-align: center">
-                                    Receita
+                                    <a href="#" ng-click="orderByAllMinersField='recipe_cost'; reverseAllMinersSort = !reverseAllMinersSort">
+                                        Receita
+                                        <span ng-show="orderByAllMinersField == 'recipe_cost'">
+                                            <span ng-show="!reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-asc"></i>
+                                            </span>
+                                            <span ng-show="reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-desc"></i>
+                                            </span>
+                                        </span>
+                                    </a>
                                 </th>
-                                <th style="text-align: center">
+                                <!-- <th style="text-align: center">
                                     <a href="#" ng-click="orderByAllMinersField='craft_cost_diff'; reverseAllMinersSort = !reverseAllMinersSort">
                                         Desconto merge (%)
                                         <span ng-show="orderByAllMinersField == 'craft_cost_diff'">
@@ -587,7 +598,7 @@
                                             </span>
                                         </span>
                                     </a>
-                                </th>
+                                </th> -->
                                 
                                 <th style="text-align: center">
                                     <a href="#" ng-click="orderByAllMinersField='level'; reverseAllMinersSort = !reverseAllMinersSort">
@@ -657,13 +668,16 @@
                                         <span ng-if="item.component_type === 'mutation_components'"><img width="20" height="20" src="https://static.rollercoin.com/static/img/storage/mutation_components/{{item._id}}.png?v=1.0.1"/> {{item.count}} <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'mutation_component')" class="fas fa-external-link-alt"></i></span>
                                         <span ng-if="item.component_type === 'miners'"><img width="20" height="20" src="https://rollercoin.com/static/images/basic_miner.39e37c9f62068115758b..svg"/> {{item.count}} <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'miner')" class="fas fa-external-link-alt"></i></span>
                                     </p>
-                                    <p ng-repeat="item in miner.old_craft_items">
-                                        <span ng-if="item.component_type === 'mutation_components'"><img width="20" height="20" src="https://static.rollercoin.com/static/img/storage/mutation_components/{{item._id}}.png?v=1.0.1"/> <s>{{item.count}}</s> <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'mutation_component')" class="fas fa-external-link-alt"></i></span>
+                                    <p>
+                                        {{miner.recipe_cost}} RLT
                                     </p>
+                                    <!-- <p ng-repeat="item in miner.old_craft_items">
+                                        <span ng-if="item.component_type === 'mutation_components'"><img width="20" height="20" src="https://static.rollercoin.com/static/img/storage/mutation_components/{{item._id}}.png?v=1.0.1"/> <s>{{item.count}}</s> <i style="font-size:10px;margin-left:2px" ng-click="openBuyCraftLink(item._id, 'mutation_component')" class="fas fa-external-link-alt"></i></span>
+                                    </p> -->
                                 </td>
-                                <td style="text-align: center">
+                                <!-- <td style="text-align: center">
                                     {{miner.craft_cost_diff}}%
-                                </td>
+                                </td> -->
                                 <td style="text-align: center; position: relative;">
                                     <img ng-if="miner.level == 0" src='https://rollercoin.com/static/img/storage/rarity_icons/level_1.png?v=1.0.0' style='left: 40px;position: absolute;top: 25px;'/>
                                     <img ng-if="miner.type === 'old_merge'" src='https://rollercoin.com/static/images/level_star.4ff18517e5e8eed42060..png' style='left: 40px;position: absolute;top: 25px;'/>
