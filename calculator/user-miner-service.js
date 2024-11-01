@@ -34,7 +34,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
     this.getUserByNick = async function(nick) {
         try {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/public-user-profile-data/${nick}`);
-            const response = await $http.get(`https://corsproxy.io/?url=${url}`);
+            const response = await $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${url}`);
             if (response.status === 200) { 
                 const user = response.data;
                 if(user.error !== '') {
@@ -53,7 +53,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
     this.getUserPowerDataById = async function(id) {
         try {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/user-power-data/${id}`);
-            const response = await $http.get(`https://corsproxy.io/?url=${url}`);
+            const response = await $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${url}`);
             if (response.status === 200) { 
                 return response.data.data;
             } else {
@@ -68,7 +68,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
     this.getUserRoomDataById = async function(id) {
         try {
             const url = encodeURIComponent(`https://rollercoin.com/api/game/room-config/${id}`);
-            const response = await $http.get(`https://corsproxy.io/?url=${url}`);
+            const response = await $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${url}`);
             if (response.status === 200) { 
                 return response.data.data;
             } else {
