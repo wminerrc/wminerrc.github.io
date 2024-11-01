@@ -169,9 +169,9 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
     };
 
     var getCurrencies = function() {
-        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?url=${encodeURIComponent('https://rollercoin.com/api/wallet/get-currencies-config')}`).then(response => {
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent('https://rollercoin.com/api/wallet/get-currencies-config')}`).then(response => {
             if (response.status === 200) { 
-                const result = response;
+                const result = response.data;
                 return result.data.currencies_config.filter(c => c.is_can_be_mined).map(c => ({
                     name: c.name,
                     in_game_only: c.network === '' || c.network === 'Rollertoken',
@@ -188,9 +188,9 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
 
     var getBlockSizeByCurrency = async function(currency) {
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=block_reward`;
-        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?url=${encodeURIComponent(search)}`).then(response => {
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
-                const result = response;
+                const result = response.data;
                 return result.data[0].value;
             }
         });
@@ -198,9 +198,9 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
 
     var getNetworkPowerByCurrency = async function(currency) {
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=total_power`;
-        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?url=${encodeURIComponent(search)}`).then(response => {
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
-                const result = response;
+                const result = response.data;
                 return result.data[0].value;
             }
         });
@@ -208,9 +208,9 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
 
     var getBlockTimeByCurrency = async function(currency) {
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=duration`;
-        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?url=${encodeURIComponent(search)}`).then(response => {
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
-                const result = response;
+                const result = response.data;
                 return result.data[0].value;
             }
         });
