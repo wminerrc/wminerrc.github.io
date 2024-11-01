@@ -36,7 +36,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/public-user-profile-data/${nick}`);
             const response = await $http.get(`https://corsproxy.io/?url=${url}`);
             if (response.status === 200) { 
-                const user = JSON.parse(response.data.contents);
+                const user = response.data;
                 if(user.error !== '') {
                     return;
                 }
@@ -55,7 +55,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/user-power-data/${id}`);
             const response = await $http.get(`https://corsproxy.io/?url=${url}`);
             if (response.status === 200) { 
-                return JSON.parse(response.data.contents).data;
+                return response.data;
             } else {
                 throw new Error(`Failed to fetch user power data: ${response.statusText}`);
             }
@@ -70,7 +70,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             const url = encodeURIComponent(`https://rollercoin.com/api/game/room-config/${id}`);
             const response = await $http.get(`https://corsproxy.io/?url=${url}`);
             if (response.status === 200) { 
-                return JSON.parse(response.data.contents).data;
+                return response.data;
             } else {
                 throw new Error(`Failed to fetch user room data: ${response.statusText}`);
             }
