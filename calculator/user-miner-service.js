@@ -55,7 +55,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             const url = encodeURIComponent(`https://rollercoin.com/api/profile/user-power-data/${id}`);
             const response = await $http.get(`https://corsproxy.io/?url=${url}`);
             if (response.status === 200) { 
-                return response.data;
+                return response.data.data;
             } else {
                 throw new Error(`Failed to fetch user power data: ${response.statusText}`);
             }
