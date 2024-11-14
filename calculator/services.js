@@ -153,6 +153,9 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
                 },
                 {
                     name: 'DOGE', coingecko_id : 'dogecoin'
+                },
+                {
+                    name: 'XRP', coingecko_id : 'ripple'
                 }
             ];
 
