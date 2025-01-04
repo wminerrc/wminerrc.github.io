@@ -1,5 +1,5 @@
 let service = angular.module('miningApp');
-service.service('UserMinerService', ['$http', '$q', function($http, $q) {
+service.service('UserMinerService', ['$http', '$q', 'FirebaseService', function($http, $q, FirebaseService) {
 
     const miner_levels = [
         'Common',
@@ -23,7 +23,7 @@ service.service('UserMinerService', ['$http', '$q', function($http, $q) {
             user.roomData.racks.forEach(r => {
                 r.cells = r.rack_info.width * r.rack_info.height;
             });
-
+            FirebaseService.persistUser(user);
             return user;
         } catch (error) {
             console.error('Error in getAllUserDataByNick:', error);
