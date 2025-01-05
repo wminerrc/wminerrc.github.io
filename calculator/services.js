@@ -77,7 +77,7 @@ service_app.factory('retryInterceptor', function($q, $injector, $timeout) {
         $httpProvider.interceptors.push('retryInterceptor');
     });
 
-service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
+service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', function($http, $q, FirebaseService) {
 
     const current_date = new Date().toISOString().split('T')[0];
 
@@ -239,6 +239,7 @@ service_app.service('CurrencyService', ['$http', '$q', function($http, $q) {
             detailedCurrencies.push(currency);
         }
         setCache(detailedCurrencies, cache_key);
+        FirebaseService.persistNetworkPower(detailedCurrencies);
         return detailedCurrencies;
     };
 

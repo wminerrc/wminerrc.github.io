@@ -22,8 +22,8 @@
     <script src="data/old/merge_miners.js"></script>
     <script src="data/components.js"></script>
     <script src="app.js"></script>
-    <script src="services.js"></script>
     <script src="firebase-db-service.js"></script>
+    <script src="services.js"></script>
     <script src="user-miner-service.js"></script>
     <script src="miner-service.js"></script>
     <style>
@@ -1281,6 +1281,44 @@
     <br/>
     <br/>
     <br/>
+
+    <div class="col-md-8 col-xs-offset-2 table-container">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3" style="text-align: center">
+                        Usuários consultados recentemente
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align: center">
+                        Usuário
+                    </th>
+                    <th style="text-align: center">
+                        Consultado em
+                    </th>
+                    <th style="text-align: center">
+                        Total de consultas
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr ng-repeat="user in recentUsers">
+                        <td>{{user.name}}</td>
+                        <td>{{user.timeAgo}}</td>
+                        <td>{{user.searchCount}}</td>
+                    </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">Ferramenta da comunidade para a comunidade ❤️</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
     <div style="
     background-color: white;
     width: 40%;

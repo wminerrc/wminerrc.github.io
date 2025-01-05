@@ -1,6 +1,6 @@
 var app = angular.module('miningApp', ['ui.bootstrap']);
 
-app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', async function($scope, CurrencyService, UserMinerService, MinerService) {
+app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', 'FirebaseService', async function($scope, CurrencyService, UserMinerService, MinerService, FirebaseService) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -338,6 +338,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             }
         }
     });
+
+    $scope.recentUsers = await FirebaseService.listUsers();
 
     $scope.getMinersByName = async function(name) {
         return await MinerService.getMinersByName(name);
