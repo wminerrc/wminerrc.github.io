@@ -32,6 +32,18 @@ servicex.service('FirebaseService', ['$http', '$q', function($http, $q) {
         }
     }    
 
+    function getDateRange(startDate, endDate) {
+        const today = new Date();
+        startDate = startDate ? new Date(startDate) : new Date(today.setDate(today.getDate() - 5));
+        endDate = endDate ? new Date(endDate) : new Date();
+      
+        const dateRange = [];
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+          dateRange.push(d.toISOString().split("T")[0]);
+        }
+        return dateRange;
+    }
+
     this.persistUser = async function(usr) {
         const docRef = db.collection("users").doc(usr.avatar_id);
         const queryData = {
@@ -44,10 +56,9 @@ servicex.service('FirebaseService', ['$http', '$q', function($http, $q) {
         if (docSnapshot.exists) {
             const existingUserData = docSnapshot.data();
             let searchCount = existingUserData.searchCount ?? 0;
-            const updatedQueries = existingUserData.queries || [];
-            if(!updatedQueries.find(d => d.queriedAt === queryData.queriedAt)) {
-                updatedQueries.push(queryData);
-            }   
+            let updatedQueries = existingUserData.queries || [];
+            updatedQueries = updatedQueries.filter(q => q.queriedAt !== queryData.queriedAt);
+            updatedQueries.push(queryData);
             await docRef.update({
                 name: usr.name,
                 searchCount: ++searchCount,
@@ -73,6 +84,31 @@ servicex.service('FirebaseService', ['$http', '$q', function($http, $q) {
         users.forEach(u => u.timeAgo = timeAgo(u.lastSearchedAt) );
         return users;
     };
+
+    this.getUserStatistic = async function(usr) {
+        const docRef = db.collection("users").doc(usr.avatar_id);
+        const docSnapshot = await docRef.get();
+        const dateRange = getDateRange();
+        if(docSnapshot.exists) {
+            const existingUserData = docSnapshot.data();
+            let networkData = [];
+            let userData = [];
+            for(var x in dateRange) {
+                let networkPowerAtDay = await db.collection("network_power").doc(dateRange[x]).get();
+                if(networkPowerAtDay.exists) {
+                    const networkPower = networkPowerAtDay.data();
+                    networkPower.queriedAt = dateRange[x];
+                    networkData.push(networkPower);
+                }
+                const userPowerAtDay = existingUserData.queries?.find(q => q.queriedAt === dateRange[x]);
+                if(userPowerAtDay) {
+                    userData.push(userPowerAtDay);   
+                }
+            }
+            return {user: userData, network: networkData, dateRange: dateRange};
+        }
+        return {user: [], network: [], dateRange: dateRange};
+    }
 
     this.persistNetworkPower = async function(currencies) {
         const snapshot_idx = new Date().toISOString().split('T')[0]

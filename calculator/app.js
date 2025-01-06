@@ -397,6 +397,176 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
+    function calculatePowerData(data) {
+        const dateRange = data.dateRange;
+        const userData = data.user;
+        const networkData = data.network;
+    
+        const networkPowerByDate = {};
+        const userPowerByDate = {};
+    
+        networkData.forEach(item => networkPowerByDate[item.queriedAt] = item.totalPower);
+        userData.forEach(item => userPowerByDate[item.queriedAt] = item.powerData.total);
+    
+        return dateRange.map((date, i) => {
+            const networkPower = networkPowerByDate[date] || 0;
+            const userPower = userPowerByDate[date] || 0;
+            
+            let networkPowerIncrease = 0;
+            let userPowerIncrease = 0;
+            let networkPowerAbsIncrease = 0;
+            let userPowerAbsIncrease = 0;
+    
+            if (i > 0) {
+                const prevDate = dateRange[i - 1];
+                const prevNetworkPower = networkPowerByDate[prevDate] || 0;
+                const prevUserPower = userPowerByDate[prevDate] || 0;
+    
+                networkPowerAbsIncrease = networkPower - prevNetworkPower;
+                userPowerAbsIncrease = userPower - prevUserPower;
+    
+                if (prevNetworkPower !== 0) {
+                    networkPowerIncrease = ((networkPower - prevNetworkPower) / prevNetworkPower).toFixed(3);
+                }
+                if (prevUserPower !== 0) {
+                    userPowerIncrease = ((userPower - prevUserPower) / prevUserPower).toFixed(3);
+                }
+            }
+    
+            const resultItem = {
+                date,
+                networkPower,
+                userPower,
+                networkPowerAbsIncrease,
+                userPowerAbsIncrease
+            };
+    
+            if (i > 0) {
+                resultItem.networkPowerIncrease = networkPowerIncrease;
+                resultItem.userPowerIncrease = userPowerIncrease;
+            }
+    
+            return resultItem;
+        });
+    }
+    
+
+    $scope.showStatistics = async function() {
+        if($scope.formData.showUserStatistics) {
+            $scope.statistics = await FirebaseService.getUserStatistic($scope.user_data);
+            $scope.statistics = calculatePowerData($scope.statistics);
+            const labels = $scope.statistics.map(s => s.date);
+            const networkGrowth = $scope.statistics.map(s => s.networkPower);
+            const playerGrowth = $scope.statistics.map(s => s.userPower);
+            const chart = echarts.init(document.getElementById('chart'));
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                    },
+                },
+                formatter: function (params) {
+                    if(Array.isArray(params)) {
+                        const day = $scope.statistics.find(s => s.date === params[0]?.name);
+                        const networkPower = chooseBestHashRateUnit(day?.networkPower ?? 0, 'GH/s');
+                        const networkLabel = `${networkPower.value.toFixed(2)} ${networkPower.unit}`
+                        const networkPowerIncrease = chooseBestHashRateUnit(day?.networkPowerAbsIncrease ?? 0, 'GH/s');
+                        const networkPowerIncreaseLabel = `${networkPowerIncrease.value.toFixed(2)} ${networkPowerIncrease.unit}`
+                        const userPower = chooseBestHashRateUnit(day?.userPower ?? 0, 'GH/s');
+                        const userPowerIncrease = chooseBestHashRateUnit(day?.userPowerAbsIncrease ?? 0, 'GH/s');
+                        const userPowerIncreaseLabel = `${userPowerIncrease.value.toFixed(2)} ${userPowerIncrease.unit}`
+                        const userPowerLabel = `${userPower.value.toFixed(2)} ${userPower.unit}`
+                        return `Poder da rede: ${networkLabel}
+                                <br>Seu poder: ${userPowerLabel}
+                                <br>A rede subiu ${networkPowerIncreaseLabel} (${day.networkPowerIncrease} %)
+                                <br>Você subiu ${userPowerIncreaseLabel} (${day.userPowerIncrease} %)
+                                `;
+                    }
+                    return params;
+                },
+                legend: {
+                    data: ['Crescimento da Rede', 'Seu Crescimento como Jogador'],
+                    top: '0%',
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true,
+                },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    axisLabel: {
+                        fontSize: 12,
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#333',
+                        },
+                    },
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 12,
+                        formatter: function (value) {
+                            const power = chooseBestHashRateUnit(value, 'GH/s');
+                            return `${power.value.toFixed(2)} ${power.unit}`
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#333',
+                        },
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                        },
+                    },
+                },
+                series: [
+                    {
+                        name: 'Crescimento da Rede',
+                        data: networkGrowth,
+                        type: 'line',
+                        smooth: true, // Linha suave
+                        color: '#1E90FF', // Azul
+                        lineStyle: {
+                            width: 3,
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8,
+                    },
+                    {
+                        name: 'Seu Crescimento como Jogador',
+                        data: playerGrowth,
+                        type: 'line',
+                        smooth: true, // Linha suave
+                        color: '#FF6347', // Vermelho
+                        lineStyle: {
+                            width: 3,
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8,
+                    },
+                ],
+            };
+
+            // Exibe o gráfico
+            chart.setOption(option);
+
+
+
+            $scope.$apply();
+        }else {
+            $scope.allMiners = [];
+        }
+    }
+
     $scope.onSelect = async function($item) {
         $scope.isLoading = true;
         $scope.detailed_miners = await MinerService.getDetailedMiner($item);

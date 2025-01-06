@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
     <script src="data/basic_miners.js"></script>
     <script src="data/merge_miners.js"></script>
     <script src="data/old/merge_miners.js"></script>
@@ -27,6 +28,12 @@
     <script src="user-miner-service.js"></script>
     <script src="miner-service.js"></script>
     <style>
+        #chart {
+            width: 30%;
+            height: 250px;
+            margin: 0 auto;
+            margin-top: 350px;
+        }
         html {
             scroll-behavior: smooth;
         }
@@ -293,7 +300,9 @@
                         <input type="checkbox" ng-model="formData.showRacks" name="show_miners" />
                         <label for="scales">Exibir racks</label>
                         <input type="checkbox" ng-model="formData.showAllMiners" ng-change="filterAllMiners()" name="show_all_miners" />
-                        <label for="scales">Simular aquisições (novo)</label>
+                        <label for="scales">Simular aquisições</label>
+                        <input type="checkbox" ng-model="formData.showUserStatistics" ng-change="showStatistics()" name="show_statistics" />
+                        <label for="scales">Mostrar estatísticas</label>
                     </div>
                 </fieldset>
                 <table class="table table-bordered">
@@ -719,6 +728,10 @@
                     </table>
                     <ul uib-pagination first-text="Primeira Pág." previous-text="Anterior" last-text="Última Pág." next-text="Próxima Pág." total-items="allMiners.length" ng-model="currentPage" max-size="5" class="pagination-sm" items-per-page="itemsPerPage" boundary-links="true" num-pages="numPages"></ul>
                 </div>
+            </div>
+
+            <div ng-if="formData.showUserStatistics">
+                <div id="chart"></div>
             </div>
 
             <div ng-if="formData.showAddMinerSimulation" class="col-md-8 table-container">
