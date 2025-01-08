@@ -85,6 +85,14 @@ servicex.service('FirebaseService', ['$http', '$q', function($http, $q) {
         return users;
     };
 
+    this.getBonusTask = async function() {
+        const docRef = db.collection("bonus_task").doc("today");
+        const docSnapshot = await docRef.get();
+        if(docSnapshot.exists) {
+            return docSnapshot.data();
+        }
+    };
+
     this.getUserStatistic = async function(usr) {
         const docRef = db.collection("users").doc(usr.avatar_id);
         const docSnapshot = await docRef.get();

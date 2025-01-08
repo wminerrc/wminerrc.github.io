@@ -213,8 +213,42 @@
         <img src="images/hamster.png" style="height:50px;width:50px;margin-right:15px;">
         <h1>Calculadora Rollercoin | Wminer</h1>
     </header>
-
+    
     <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-offset-2">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center" colspan="2">
+                                Task bônus do dia {{dailyBonus.date}}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center">
+                                Quest
+                            </th>
+                            <th style="text-align: center">
+                                Recompensas
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="task in dailyBonus.task">
+                            <td style="text-align: center">
+                                {{task.quest}}
+                            </td>
+                            <td style="text-align: center">
+                                <ul style="list-style: none;">
+                                    <li ng-repeat="reward in dailyBonus.task[0].rewards">{{ reward }}</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-4">
                 <form name="miningForm">
@@ -291,6 +325,7 @@
                     </div>
                 </form>
             </div>
+            
             <div ng-if="user_data" class="col-md-8 table-container">
                 <h3>Calculando ganhos para {{user_data.name}}</h3>
                 <fieldset>

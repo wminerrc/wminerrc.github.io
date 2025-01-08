@@ -449,8 +449,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             return resultItem;
         });
     }
-    
 
+    $scope.dailyBonus = await FirebaseService.getBonusTask();
+    
     $scope.showStatistics = async function() {
         if($scope.formData.showUserStatistics) {
             $scope.statistics = await FirebaseService.getUserStatistic($scope.user_data);
