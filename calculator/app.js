@@ -1,6 +1,6 @@
 var app = angular.module('miningApp', ['ui.bootstrap']);
 
-app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', 'FirebaseService', async function($scope, CurrencyService, UserMinerService, MinerService, FirebaseService) {
+app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', 'FirebaseService', '$sce', async function($scope, CurrencyService, UserMinerService, MinerService, FirebaseService, $sce) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -238,9 +238,14 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     };
 
+    const removeFirstMatch = (array, condition) => array.splice(array.findIndex(condition), 1)[0];
 
     const chooseBestHashRateUnit = (value, fromUnit) => {
         const units = $scope.networkUnits.slice();
+        let minusValue = value < 0;
+        if(minusValue) {
+            value = value * -1;
+        }
         do{
              let unit =  units.pop();
              let converted_value = convertHashrate(value, fromUnit, unit);
@@ -248,12 +253,23 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                  return {value: converted_value, unit: unit};
              }
         }while(units.length);
+        if(minusValue) {
+            value = value * -1;
+        }
         return {value: value, unit: fromUnit};
      };
 
     if(typeof loaded_user === 'string' && loaded_user !== '') {
         try{
-            $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);   
+            $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);
+            $scope.user_miners = await MinerService.getAllMinersByFilter(undefined, undefined, undefined, undefined, $scope.user_data.roomData.miners.map(m => m.miner_id), undefined, undefined);
+            let miners_locations = $scope.user_data.roomData.miners.slice();
+
+            $scope.user_miners.forEach(m => {
+                let userMiner = removeFirstMatch(miners_locations, um => um.miner_id === m.miner_id);
+                m.placement = userMiner.placement;
+            })
+            $scope.visible_user_miners = $scope.user_miners;
             $scope.user_data.all_racks_cells = $scope.user_data.roomData.racks.map(r => r.cells).reduce((a, b) => a + b, 0);
             $scope.user_data.occupied_racks_cells = $scope.user_data.roomData.miners.map(m => m.width).reduce((a, b) => a + b, 0);
             $scope.user_data.all_racks_space = $scope.user_data.roomData.rooms.map(r => (r.room_info.cols / 2) * r.room_info.rows).reduce((a, b) => a + b, 0);
@@ -365,6 +381,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     $scope.allMinerNegotiableStatus = 'all';
     $scope.allMinerCollectionId = "-1";
 
+
+    //userMinersFilter
+    $scope.userMinersItemsPerPage = 6;
+    $scope.userMinersCurrentPage = 1;
+
     $scope.keepUser = localStorage.getItem('keep_loaded_user') ? true : false;
 
     $scope.updateKeepUser = async function(keepUser) {
@@ -372,6 +393,16 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             localStorage.setItem('keep_loaded_user', $scope.userSearchText);
         }else {
             localStorage.removeItem('keep_loaded_user');
+        }
+    }
+
+    $scope.filterUserMiners = async function(search, rarity, bonus, negotiable, minMinerPower, maxMinerPower) {
+        if($scope.formData.showMiners) {
+            let miners_to_show = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, $scope.user_data.roomData.miners.map(m => m.miner_id), minMinerPower, maxMinerPower);
+            $scope.visible_user_miners = $scope.user_miners.filter(m => miners_to_show.find(ts => ts.miner_id === m.miner_id));
+            $scope.$apply();
+        }else {
+            $scope.visible_user_miners = [];
         }
     }
 
@@ -600,6 +631,17 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         window.open(`https://rollercoin.com/marketplace/buy/miner/${item.miner_id}`,'_blank');
     }
 
+    $scope.openSellLink = async function(item) {
+        if(!localStorage.getItem('alreadyDonatedMessage')) {
+            localStorage.setItem('alreadyDonatedMessage', 'true');
+            if(confirm('Te ajudei a tomar essa decisão de venda? Considere fazer uma contribuição para manter o desenvolvimento desse projeto')) {
+                window.scrollTo(0, document.body.scrollHeight);
+                return;
+            }
+        }
+        window.open(`https://rollercoin.com/marketplace/sell/miner/${item.miner_id}`,'_blank');
+    }
+
     $scope.openBuyCraftLink = async function(id, type) {
         if(!localStorage.getItem('alreadyDonatedMessage')) {
             localStorage.setItem('alreadyDonatedMessage', 'true');
@@ -622,26 +664,41 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         $scope.recalculateUserPower();
     }
 
+    $scope.removeUserMinerSimulation = async function($item) {
+        $item.removed = true;
+        $scope.recalculateUserPower();
+    }
+
+    $scope.revertRemoveUserMinerSimulation = async function($item) {
+        $item.removed = false;
+        $scope.recalculateUserPower();
+    }
+
     const calcPercentIncrease = (a, b) => b === 0 ? Infinity : ((a - b) / b) * 100;
 
     $scope.recalculateUserPower = async function() {
-        if($scope.customMiners.length === 0) {
+        $scope.customMiners = $scope.customMiners || [];
+        if($scope.customMiners.length === 0 && !$scope.user_miners.find(m => m.removed)) {
             $scope.user_data.newPowerData = undefined;
             const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
             $scope.formData.power = bestHashRate.value;
             $scope.formData.unit = bestHashRate.unit;
             return;
         }
+        let removedMinersForBonusCalc = $scope.user_miners.filter(m => m.removed && !$scope.user_miners.find(om => om.miner_id === m.miner_id && !om.removed));
+        removedMinersForBonusCalc = getUniqueListBy(removedMinersForBonusCalc, 'miner_id');
         let customMinersForBonusCalc = $scope.customMiners.filter(m => !$scope.user_data.roomData.miners.find(rm => m.miner_id === rm.miner_id));
         customMinersForBonusCalc = getUniqueListBy(customMinersForBonusCalc, 'miner_id');
         const new_bonus = customMinersForBonusCalc.map(m => parseFloat(m.bonus_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        const removed_bonus = removedMinersForBonusCalc.map(m => parseFloat(m.bonus_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        let removed_power = $scope.user_miners.filter(m => m.removed).map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         let new_power = $scope.customMiners.map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         $scope.user_data.newPowerData = {
-            bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent,
-            new_bonus_percent : new_bonus,
-            new_power : new_power,
-            miners: $scope.user_data.powerData.miners + new_power,
-            total: (($scope.user_data.powerData.miners + new_power) * ((new_bonus + $scope.user_data.powerData.bonus_percent) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent - removed_bonus,
+            new_bonus_percent : new_bonus - removed_bonus,
+            new_power : new_power - removed_power,
+            miners: $scope.user_data.powerData.miners + new_power - removed_power,
+            total: (($scope.user_data.powerData.miners + new_power - removed_power) * ((new_bonus + $scope.user_data.powerData.bonus_percent - removed_bonus) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
         };
         $scope.user_data.newPowerData.new_total = $scope.user_data.newPowerData.total - $scope.user_data.powerData.total;
         $scope.user_data.newPowerData.new_total_percent = calcPercentIncrease($scope.user_data.newPowerData.total, $scope.user_data.powerData.total);
@@ -900,7 +957,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         const room_location = miner_rack.placement.room_level+1;
         const rack_row =  miner_rack.placement.y + 1;
         const rack_column =  miner_rack.placement.x + 1;
-        return `${capitalize(ordinalNum(room_location))} sala, ${ordinalNum(rack_row)} fileira, ${ordinalNum(rack_column)} rack`;
+        return $sce.trustAsHtml(`${capitalize(ordinalNum(room_location))} sala<br>${ordinalNum(rack_row)} fileira<br>${ordinalNum(rack_column)} rack`);
     }
 
 
