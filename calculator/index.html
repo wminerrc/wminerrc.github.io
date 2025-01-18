@@ -631,7 +631,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th colspan="7" style="text-align: center">
+                                <th colspan="8" style="text-align: center">
                                     Miners encontradas: {{allMiners.length}}
                                 </th>
                             </tr>
@@ -705,6 +705,19 @@
                                     </a>
                                 </th>
                                 <th style="text-align: center">
+                                    <a href="#" ng-click="orderByAllMinersField='includeImpactPower'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
+                                        Impacto
+                                        <span ng-show="orderByAllMinersField == 'includeImpactPower'">
+                                            <span ng-show="!reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-asc"></i>
+                                            </span>
+                                            <span ng-show="reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-desc"></i>
+                                            </span>
+                                        </span>
+                                    </a>
+                                </th>
+                                <th style="text-align: center">
                                     Ações
                                 </th>
                             </tr>
@@ -725,7 +738,7 @@
                                         background-color: red;
                                         font-size: 0.6em;
                                         font-weight: bold;
-                                        margin-left: 20%;
+                                        margin-left: 8%;
                                         color: white;
                                     ">INEGOCIAVEL</div>
                                 </td>
@@ -755,6 +768,9 @@
                                 </td>
                                 <td style="text-align: center">
                                     {{(miner.bonus_power / 100)}}%
+                                </td>
+                                <td style="text-align: center">
+                                    {{miner.includeImpactLegend.value.toFixed(2)}} {{miner.includeImpactLegend.unit}}
                                 </td>
                                 <td style="text-align: center">
                                     <button style="min-width: 80px;margin: 4px;" ng-click="addMinerToSimulation(miner)">Adicionar!</button><br/>

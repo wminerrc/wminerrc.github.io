@@ -261,9 +261,6 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
      const calculateSingleMinerImpact = function(miner, isRemove) {
         if(isRemove) {
-            if(miner.name.en === 'Good Memories') {
-                debugger;
-            }
             const removed_bonus = $scope.user_miners.filter(m => !m.removed && m.miner_id === miner.miner_id).length > 1 ? 0 : parseFloat(miner.bonus_power);
             let removed_power = parseFloat(miner.power);
             let power_after_remove = (($scope.user_data.powerData.miners - removed_power + $scope.user_data.powerData.games) * (( $scope.user_data.powerData.bonus_percent - removed_bonus) / 10000)) + ($scope.user_data.powerData.miners - removed_power) + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
@@ -275,7 +272,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }else {
             const added_bonus = $scope.user_miners.filter(m => !m.removed && m.miner_id === miner.miner_id).length == 0 ? parseFloat(miner.bonus_power) : 0;
             let added_power = parseFloat(miner.power);
-            let add_impact = (($scope.user_data.powerData.miners + added_power) * (( $scope.user_data.powerData.bonus_percent + added_bonus) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            let power_after_added = (($scope.user_data.powerData.miners + added_power  + $scope.user_data.powerData.games) * (( $scope.user_data.powerData.bonus_percent + added_bonus) / 10000)) + ($scope.user_data.powerData.miners + added_power) + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            let add_impact = power_after_added - $scope.user_data.powerData.total 
+
             return { 
                 legend: chooseBestHashRateUnit(add_impact, 'GH/s'),
                 impact: add_impact
@@ -297,6 +296,16 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
                 m.removeImpactLegend = impact.legend;
             })
             $scope.visible_user_miners = $scope.user_miners;
+            window.basic_miners?.forEach(m => {
+                let impact = calculateSingleMinerImpact(m, false);
+                m.includeImpactPower = impact.impact;
+                m.includeImpactLegend = impact.legend;
+            });
+            window.merge_miners?.forEach(m => {
+                let impact = calculateSingleMinerImpact(m, false);
+                m.includeImpactPower = impact.impact;
+                m.includeImpactLegend = impact.legend;
+            });
             $scope.user_data.all_racks_cells = $scope.user_data.roomData.racks.map(r => r.cells).reduce((a, b) => a + b, 0);
             $scope.user_data.occupied_racks_cells = $scope.user_data.roomData.miners.map(m => m.width).reduce((a, b) => a + b, 0);
             $scope.user_data.all_racks_space = $scope.user_data.roomData.rooms.map(r => (r.room_info.cols / 2) * r.room_info.rows).reduce((a, b) => a + b, 0);
