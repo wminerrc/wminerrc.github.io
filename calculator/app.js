@@ -739,7 +739,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         };
         let new_deoccupied_cells = $scope.user_miners.filter(m => m.removed).map(m => m.width).reduce((a, b) => a + b, 0);
         let new_occupied_cells = $scope.customMiners.map(m => m.width).reduce((a, b) => a + b, 0);
-        $scope.user_data.occupied_racks_cells = $scope.user_data.occupied_racks_cells + new_occupied_cells - new_deoccupied_cells;
+        $scope.user_data.occupied_racks_cells = $scope.user_data.roomData.miners.map(m => m.width).reduce((a, b) => a + b, 0) + new_occupied_cells - new_deoccupied_cells;
         $scope.user_data.newPowerData.new_total = $scope.user_data.newPowerData.total - $scope.user_data.powerData.total;
         $scope.user_data.newPowerData.new_total_percent = calcPercentIncrease($scope.user_data.newPowerData.total, $scope.user_data.powerData.total);
         const bestHashRate = chooseBestHashRateUnit($scope.user_data.newPowerData.total, 'GH/s');
