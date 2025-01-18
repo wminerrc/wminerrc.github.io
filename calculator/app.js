@@ -259,6 +259,30 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         return {value: value, unit: fromUnit};
      };
 
+     const calculateSingleMinerImpact = function(miner, isRemove) {
+        if(isRemove) {
+            if(miner.name.en === 'Good Memories') {
+                debugger;
+            }
+            const removed_bonus = $scope.user_miners.filter(m => !m.removed && m.miner_id === miner.miner_id).length > 1 ? 0 : parseFloat(miner.bonus_power);
+            let removed_power = parseFloat(miner.power);
+            let power_after_remove = (($scope.user_data.powerData.miners - removed_power + $scope.user_data.powerData.games) * (( $scope.user_data.powerData.bonus_percent - removed_bonus) / 10000)) + ($scope.user_data.powerData.miners - removed_power) + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            let remove_impact = $scope.user_data.powerData.total - power_after_remove
+            return { 
+                legend: chooseBestHashRateUnit(remove_impact, 'GH/s'),
+                impact: remove_impact
+            }   
+        }else {
+            const added_bonus = $scope.user_miners.filter(m => !m.removed && m.miner_id === miner.miner_id).length == 0 ? parseFloat(miner.bonus_power) : 0;
+            let added_power = parseFloat(miner.power);
+            let add_impact = (($scope.user_data.powerData.miners + added_power) * (( $scope.user_data.powerData.bonus_percent + added_bonus) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            return { 
+                legend: chooseBestHashRateUnit(add_impact, 'GH/s'),
+                impact: add_impact
+            } 
+        }
+    }
+
     if(typeof loaded_user === 'string' && loaded_user !== '') {
         try{
             $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);
@@ -268,6 +292,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             $scope.user_miners.forEach(m => {
                 let userMiner = removeFirstMatch(miners_locations, um => um.miner_id === m.miner_id);
                 m.placement = userMiner.placement;
+                let impact = calculateSingleMinerImpact(m, true);
+                m.removeImpactPower = impact.impact;
+                m.removeImpactLegend = impact.legend;
             })
             $scope.visible_user_miners = $scope.user_miners;
             $scope.user_data.all_racks_cells = $scope.user_data.roomData.racks.map(r => r.cells).reduce((a, b) => a + b, 0);
@@ -676,6 +703,12 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     const calcPercentIncrease = (a, b) => b === 0 ? Infinity : ((a - b) / b) * 100;
 
+    const calculateUserPower = function(increasedMinerPower, increasedMinerBonus) {
+        const new_miners_power = $scope.user_data.powerData.miners + increasedMinerPower;
+        const new_miners_bonus = $scope.user_data.powerData.bonus_percent + increasedMinerBonus;
+        return $scope.user_data.powerData.games + new_miners_power + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp + ( (new_miners_power + $scope.user_data.powerData.games) *  new_miners_bonus / 10000);
+    }
+
     $scope.recalculateUserPower = async function() {
         $scope.customMiners = $scope.customMiners || [];
         if($scope.customMiners.length === 0 && !$scope.user_miners.find(m => m.removed)) {
@@ -683,6 +716,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             const bestHashRate = chooseBestHashRateUnit($scope.user_data.powerData.total, 'GH/s');
             $scope.formData.power = bestHashRate.value;
             $scope.formData.unit = bestHashRate.unit;
+            $scope.user_data.occupied_racks_cells = $scope.user_data.roomData.miners.map(m => m.width).reduce((a, b) => a + b, 0);
             return;
         }
         let removedMinersForBonusCalc = $scope.user_miners.filter(m => m.removed && !$scope.user_miners.find(om => om.miner_id === m.miner_id && !om.removed));
@@ -693,13 +727,19 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         const removed_bonus = removedMinersForBonusCalc.map(m => parseFloat(m.bonus_power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         let removed_power = $scope.user_miners.filter(m => m.removed).map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         let new_power = $scope.customMiners.map(m => parseFloat(m.power)).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        let new_miners_power = $scope.user_data.powerData.miners + new_power - removed_power
+        let new_miners_bonus = (new_bonus + $scope.user_data.powerData.bonus_percent - removed_bonus) / 10000
+        let new_bonus_power = (new_miners_power + $scope.user_data.powerData.games) * new_miners_bonus
         $scope.user_data.newPowerData = {
             bonus_percent : new_bonus + $scope.user_data.powerData.bonus_percent - removed_bonus,
             new_bonus_percent : new_bonus - removed_bonus,
             new_power : new_power - removed_power,
-            miners: $scope.user_data.powerData.miners + new_power - removed_power,
-            total: (($scope.user_data.powerData.miners + new_power - removed_power) * ((new_bonus + $scope.user_data.powerData.bonus_percent - removed_bonus) / 10000)) + $scope.user_data.powerData.miners + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
+            miners: new_miners_power,
+            total: new_bonus_power + new_miners_power  + $scope.user_data.powerData.games + $scope.user_data.powerData.racks + $scope.user_data.powerData.temp
         };
+        let new_deoccupied_cells = $scope.user_miners.filter(m => m.removed).map(m => m.width).reduce((a, b) => a + b, 0);
+        let new_occupied_cells = $scope.customMiners.map(m => m.width).reduce((a, b) => a + b, 0);
+        $scope.user_data.occupied_racks_cells = $scope.user_data.occupied_racks_cells + new_occupied_cells - new_deoccupied_cells;
         $scope.user_data.newPowerData.new_total = $scope.user_data.newPowerData.total - $scope.user_data.powerData.total;
         $scope.user_data.newPowerData.new_total_percent = calcPercentIncrease($scope.user_data.newPowerData.total, $scope.user_data.powerData.total);
         const bestHashRate = chooseBestHashRateUnit($scope.user_data.newPowerData.total, 'GH/s');

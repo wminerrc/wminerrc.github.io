@@ -433,7 +433,7 @@
                             </td>
                             <td style="text-align: center">
                                 {{user_data.roomData.rooms.length}}/4 salas<br/>
-                                {{user_data.occupied_racks_cells}}/{{user_data.all_racks_cells}} células ocupadas<br/>
+                                <span ng-class="{'wrong-value': user_data.occupied_racks_cells  > user_data.all_racks_cells}">{{user_data.occupied_racks_cells}}</span>/{{user_data.all_racks_cells}} células ocupadas<br/>
                                 {{user_data.all_racks}}/{{user_data.all_racks_space}} racks alocados
                             </td>
                         </tr>
@@ -631,7 +631,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th colspan="6" style="text-align: center">
+                                <th colspan="7" style="text-align: center">
                                     Miners encontradas: {{allMiners.length}}
                                 </th>
                             </tr>
@@ -640,7 +640,7 @@
                                     Nome
                                 </th>
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='recipe_cost'; reverseAllMinersSort = !reverseAllMinersSort">
+                                    <a href="#" ng-click="orderByAllMinersField='recipe_cost'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
                                         Receita
                                         <span ng-show="orderByAllMinersField == 'recipe_cost'">
                                             <span ng-show="!reverseMinersSort">
@@ -653,7 +653,7 @@
                                     </a>
                                 </th>
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='craft_cost_diff'; reverseAllMinersSort = !reverseAllMinersSort">
+                                    <a href="#" ng-click="orderByAllMinersField='craft_cost_diff'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
                                         Desconto merge (%)
                                         <span ng-show="orderByAllMinersField == 'craft_cost_diff'">
                                             <span ng-show="!reverseMinersSort">
@@ -665,22 +665,8 @@
                                         </span>
                                     </a>
                                 </th>
-                                
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='level'; reverseAllMinersSort = !reverseAllMinersSort">
-                                        Level
-                                        <span ng-show="orderByAllMinersField == 'level'">
-                                            <span ng-show="!reverseMinersSort">
-                                                <i class="fa fa-fw fa-sort-asc"></i>
-                                            </span>
-                                            <span ng-show="reverseMinersSort">
-                                                <i class="fa fa-fw fa-sort-desc"></i>
-                                            </span>
-                                        </span>
-                                    </a>
-                                </th>
-                                <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='supply'; reverseAllMinersSort = !reverseAllMinersSort">
+                                    <a href="#" ng-click="orderByAllMinersField='supply'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
                                         Supply
                                         <span ng-show="orderByAllMinersField == 'supply'">
                                             <span ng-show="!reverseMinersSort">
@@ -693,7 +679,7 @@
                                     </a>
                                 </th>
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='power'; reverseAllMinersSort = !reverseAllMinersSort">
+                                    <a href="#" ng-click="orderByAllMinersField='power'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
                                         Poder
                                         <span ng-show="orderByAllMinersField == 'power'">
                                             <span ng-show="!reverseMinersSort">
@@ -706,7 +692,7 @@
                                     </a>
                                 </th>
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByAllMinersField='bonus_power'; reverseAllMinersSort = !reverseAllMinersSort">
+                                    <a href="#" ng-click="orderByAllMinersField='bonus_power'; reverseAllMinersSort = !reverseAllMinersSort  ; $event.preventDefault();">
                                         Bônus
                                         <span ng-show="orderByAllMinersField == 'bonus_power'">
                                             <span ng-show="!reverseMinersSort">
@@ -726,8 +712,22 @@
                         <tbody>
                             <tr ng-repeat="miner in allMiners | orderBy:orderByAllMinersField:reverseAllMinersSort | limitTo:  itemsPerPage : (currentPage - 1) * itemsPerPage"  
                                 ng-class="{ 'already-have-miner': miner.already_have }" >
-                                <td style="text-align: center">
-                                    {{miner.name.en}}
+                                <td style="text-align: center; position: relative;">
+                                    {{miner.name.en}}<br/>
+                                    <img ng-if="miner.level == 0" src='https://rollercoin.com/static/img/storage/rarity_icons/level_1.png?v=1.0.0' style='left: 40px;position: absolute;top: 40px;'/>
+                                    <img ng-if="miner.type === 'old_merge'" src='https://rollercoin.com/static/images/level_star.4ff18517e5e8eed42060..png' style='left: 40px;position: absolute;top: 40px;'/>
+                                    <img ng-if="miner.level > 0 && miner.type !== 'old_merge'" src='https://rollercoin.com/static/img/storage/rarity_icons/level_{{miner.level+1}}.png?v=1.0.0' style='left: 40px;position: absolute;top: 40px;'/>
+                                    <img src='https://static.rollercoin.com/static/img/market/miners/{{miner.filename}}.gif?v=1707996476608' width="80px" height="auto"/>
+                                    <div ng-if="!miner.is_can_be_sold_on_mp"
+                                        style="
+                                        height: 10px;
+                                        width: 100px;
+                                        background-color: red;
+                                        font-size: 0.6em;
+                                        font-weight: bold;
+                                        margin-left: 20%;
+                                        color: white;
+                                    ">INEGOCIAVEL</div>
                                 </td>
                                 <td style="text-align: center">
                                     <p ng-repeat="item in miner.craft_items">
@@ -746,22 +746,6 @@
                                 </td>
                                 <td style="text-align: center">
                                     {{miner.craft_cost_diff}}%
-                                </td>
-                                <td style="text-align: center; position: relative;">
-                                    <img ng-if="miner.level == 0" src='https://rollercoin.com/static/img/storage/rarity_icons/level_1.png?v=1.0.0' style='left: 40px;position: absolute;top: 25px;'/>
-                                    <img ng-if="miner.type === 'old_merge'" src='https://rollercoin.com/static/images/level_star.4ff18517e5e8eed42060..png' style='left: 40px;position: absolute;top: 25px;'/>
-                                    <img ng-if="miner.level > 0 && miner.type !== 'old_merge'" src='https://rollercoin.com/static/img/storage/rarity_icons/level_{{miner.level+1}}.png?v=1.0.0' style='left: 40px;position: absolute;top: 25px;'/>
-                                    <img src='https://static.rollercoin.com/static/img/market/miners/{{miner.filename}}.gif?v=1707996476608' width="80px" height="auto"/>
-                                    <div ng-if="!miner.is_can_be_sold_on_mp"
-                                        style="
-                                        height: 10px;
-                                        width: 100px;
-                                        background-color: red;
-                                        font-size: 0.6em;
-                                        font-weight: bold;
-                                        margin-left: 16%;
-                                        color: white;
-                                    ">INEGOCIAVEL</div>
                                 </td>
                                 <td style="text-align: center">
                                     {{miner.supply}}
@@ -839,19 +823,6 @@
                                     Nome
                                 </th>
                                 <th style="text-align: center">
-                                    <a href="#" ng-click="orderByuserMinersField='level'; reverseuserMinersSort = !reverseuserMinersSort ; $event.preventDefault();">
-                                        Level
-                                        <span ng-show="orderByuserMinersField == 'level'">
-                                            <span ng-show="!reverseMinersSort">
-                                                <i class="fa fa-fw fa-sort-asc"></i>
-                                            </span>
-                                            <span ng-show="reverseMinersSort">
-                                                <i class="fa fa-fw fa-sort-desc"></i>
-                                            </span>
-                                        </span>
-                                    </a>
-                                </th>
-                                <th style="text-align: center">
                                     <a href="#" ng-click="orderByuserMinersField='power'; reverseuserMinersSort = !reverseuserMinersSort ; $event.preventDefault();">
                                         Poder
                                         <span ng-show="orderByuserMinersField == 'power'">
@@ -881,6 +852,19 @@
                                     Local
                                 </th>
                                 <th style="text-align: center">
+                                    <a href="#" ng-click="orderByuserMinersField='removeImpactPower'; reverseuserMinersSort = !reverseuserMinersSort ; $event.preventDefault();">
+                                        Impacto
+                                        <span ng-show="orderByuserMinersField == 'removeImpactPower'">
+                                            <span ng-show="!reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-asc"></i>
+                                            </span>
+                                            <span ng-show="reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-desc"></i>
+                                            </span>
+                                        </span>
+                                    </a>
+                                </th>
+                                <th style="text-align: center">
                                     Ações
                                 </th>
                             </tr>
@@ -888,13 +872,11 @@
                         <tbody>
                             <tr ng-repeat="miner in visible_user_miners | orderBy:orderByuserMinersField:reverseuserMinersSort | limitTo:  userMinersItemsPerPage : (userMinersCurrentPage - 1) * userMinersItemsPerPage"
                                 ng-class="{ 'removed-have-miner': miner.removed }">
-                                <td style="text-align: center">
-                                    {{miner.name.en}}
-                                </td>
                                 <td style="text-align: center; position: relative;">
-                                    <img ng-if="miner.level == 0" src='https://rollercoin.com/static/img/storage/rarity_icons/level_1.png?v=1.0.0' style='left: 40px;position: absolute;top: 25px;'/>
-                                    <img ng-if="miner.type === 'old_merge'" src='https://rollercoin.com/static/images/level_star.4ff18517e5e8eed42060..png' style='left: 40px;position: absolute;top: 25px;'/>
-                                    <img ng-if="miner.level > 0 && miner.type !== 'old_merge'" src='https://rollercoin.com/static/img/storage/rarity_icons/level_{{miner.level+1}}.png?v=1.0.0' style='left: 40px;position: absolute;top: 25px;'/>
+                                    {{miner.name.en}}<br/>
+                                    <img ng-if="miner.level == 0" src='https://rollercoin.com/static/img/storage/rarity_icons/level_1.png?v=1.0.0' style='left: 40px;position: absolute;top: 40px;'/>
+                                    <img ng-if="miner.type === 'old_merge'" src='https://rollercoin.com/static/images/level_star.4ff18517e5e8eed42060..png' style='left: 40px;position: absolute;top: 40px;'/>
+                                    <img ng-if="miner.level > 0 && miner.type !== 'old_merge'" src='https://rollercoin.com/static/img/storage/rarity_icons/level_{{miner.level+1}}.png?v=1.0.0' style='left: 40px;position: absolute;top: 40px;'/>
                                     <img src='https://static.rollercoin.com/static/img/market/miners/{{miner.filename}}.gif?v=1707996476608' width="80px" height="auto"/>
                                     <div ng-if="!miner.is_can_be_sold_on_mp"
                                         style="
@@ -903,7 +885,7 @@
                                         background-color: red;
                                         font-size: 0.6em;
                                         font-weight: bold;
-                                        margin-left: 16%;
+                                        margin-left: 20%;
                                         color: white;
                                     ">INEGOCIAVEL</div>
                                 </td>
@@ -915,7 +897,9 @@
                                 </td>
                                 <td>
                                     <div ng-bind-html="getMinerLocation(miner)"> </div>
-                                    
+                                </td>
+                                <td>
+                                    {{miner.removeImpactLegend.value.toFixed(2)}} {{miner.removeImpactLegend.unit}}
                                 </td>
                                 <td style="text-align: center">
                                     <button style="min-width: 80px;margin: 4px;" ng-if="!miner.removed" ng-click="removeUserMinerSimulation(miner)">Remover!</button>
