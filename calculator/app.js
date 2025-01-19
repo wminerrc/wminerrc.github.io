@@ -434,11 +434,23 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
-    $scope.filterUserMiners = async function(search, rarity, bonus, negotiable, minMinerPower, maxMinerPower, userMinerCells) {
+    $scope.filterUserMiners = async function(search, rarity, bonus, negotiable, minMinerPower, maxMinerPower, userMinerCells, userMinerDuplicate) {
         if($scope.formData.showMiners) {
             $scope.userMinersCurrentPage = 1;
             let miners_to_show = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, $scope.user_data.roomData.miners.map(m => m.miner_id), minMinerPower, maxMinerPower, userMinerCells);
             $scope.visible_user_miners = $scope.user_miners.filter(m => miners_to_show.find(ts => ts.miner_id === m.miner_id));
+            if(typeof userMinerDuplicate === 'string') {
+                if(userMinerDuplicate === 'unique') {
+                    $scope.visible_user_miners = $scope.visible_user_miners.filter(m => $scope.visible_user_miners.filter(m2 => m.miner_id === m2.miner_id).length === 1);
+                }
+                if(userMinerDuplicate === 'dup') {
+                    $scope.visible_user_miners = $scope.visible_user_miners.filter(m => $scope.visible_user_miners.filter(m2 => m.miner_id === m2.miner_id).length > 1);
+                }
+                if(userMinerDuplicate === 'stairs') {
+                    $scope.visible_user_miners = $scope.visible_user_miners.filter(m => $scope.visible_user_miners.filter(m2 => m.filename === m2.filename && (m2.type !== m.type || m2.level !== m.level) ).length > 0);
+                    $scope.orderByuserMinersField='filename';
+                }
+            }
             $scope.$apply();
         }else {
             $scope.visible_user_miners = [];

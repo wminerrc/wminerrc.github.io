@@ -806,11 +806,11 @@
             <div ng-if="formData.showMiners" class="col-md-8 table-container">
                 <div class="form-group col-md-4">
                     <label for="currency">Nome</label>
-                    <input type="text" class="form-control" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)" ng-model="userMinerNameSearch" placeholder="Buscar miner...">
+                    <input type="text" class="form-control" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)" ng-model="userMinerNameSearch" placeholder="Buscar miner...">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="currency">Raridade</label><br/>
-                    <select class="form-control" ng-model="userMinersRarity" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <select class="form-control" ng-model="userMinersRarity" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                         <option value="all">Todas</option>
                         <option value="common">Common</option>
                         <option value="legacy">Legacy</option>
@@ -824,12 +824,12 @@
                 <div class="form-group col-md-4 ng-binding">
                     <label for="currency">Bônus</label><br>
                     De   
-                    <input class="form-control" ng-model="userMinerMinBonusSearch" type="text" style="width: 21%;" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
-                    A  <input class="form-control" ng-model="userMinerMaxBonusSearch" type="text" style="width: 21%;" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <input class="form-control" ng-model="userMinerMinBonusSearch" type="text" style="width: 21%;" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
+                    A  <input class="form-control" ng-model="userMinerMaxBonusSearch" type="text" style="width: 21%;" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="currency">Negociável</label><br/>
-                    <select class="form-control" ng-model="userMinerNegotiableStatus" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <select class="form-control" ng-model="userMinerNegotiableStatus" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                         <option value="all">Todas</option>
                         <option value="inegotiable">Não negociáveis</option>
                         <option value="negotiable">Negociáveis</option>
@@ -838,20 +838,30 @@
 
                 <div class="form-group col-md-4">
                     <label for="currency">Poder mínimo (GH/s)</label><br/>
-                    <input placeholder="1" class="form-control" ng-model="userMinerMinPowerSearch" type="text" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <input placeholder="1" class="form-control" ng-model="userMinerMinPowerSearch" type="text" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                 </div>
 
                 <div class="form-group col-md-4">
                     <label for="currency">Poder máximo (GH/s)</label><br/>
-                    <input placeholder="999999999999" class="form-control" ng-model="userMinerMaxPowerSearch" type="text" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <input placeholder="999999999999" class="form-control" ng-model="userMinerMaxPowerSearch" type="text" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                 </div>
 
                 <div class="form-group col-md-4">
                     <label for="currency">Células</label><br/>
-                    <select class="form-control" ng-model="userMinerCells" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells)">
+                    <select class="form-control" ng-model="userMinerCells" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
                         <option value="all">Todas</option>
                         <option value="1">1 Slot</option>
                         <option value="2">2 Slots</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="currency">Duplicadas</label><br/>
+                    <select class="form-control" ng-model="userMinerDuplicate" ng-change="filterUserMiners(userMinerNameSearch, userMinersRarity, {min:userMinerMinBonusSearch, max:userMinerMaxBonusSearch}, userMinerNegotiableStatus, userMinerMinPowerSearch, userMinerMaxPowerSearch, userMinerCells, userMinerDuplicate)">
+                        <option value="all">Todas</option>
+                        <option value="unique">Apenas únicas</option>
+                        <option value="dup">Apenas duplicadas</option>
+                        <option value="stairs">Escadinhas</option>
                     </select>
                 </div>
                
@@ -865,7 +875,17 @@
                             </tr>
                             <tr>
                                 <th style="text-align: center">
-                                    Nome
+                                    <a href="#" ng-click="orderByuserMinersField='filename'; reverseuserMinersSort = !reverseuserMinersSort ; $event.preventDefault();">
+                                        Nome
+                                        <span ng-show="orderByuserMinersField == 'filename'">
+                                            <span ng-show="!reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-asc"></i>
+                                            </span>
+                                            <span ng-show="reverseMinersSort">
+                                                <i class="fa fa-fw fa-sort-desc"></i>
+                                            </span>
+                                        </span>
+                                    </a>
                                 </th>
                                 <th style="text-align: center">
                                     <a href="#" ng-click="orderByuserMinersField='power'; reverseuserMinersSort = !reverseuserMinersSort ; $event.preventDefault();">
