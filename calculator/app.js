@@ -285,7 +285,8 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     if(typeof loaded_user === 'string' && loaded_user !== '') {
         try{
             $scope.user_data = await UserMinerService.getAllUserDataByNick(loaded_user);
-            $scope.user_miners = await MinerService.getAllMinersByFilter(undefined, undefined, undefined, undefined, $scope.user_data.roomData.miners.map(m => m.miner_id), undefined, undefined);
+            const all_miners = await MinerService.getAllMinersByFilter(); 
+            $scope.user_miners =  $scope.user_data.roomData.miners.map(m => ({...all_miners.find(m2 => m.miner_id === m2.miner_id), rdid: uuidv4()}));
             let miners_locations = $scope.user_data.roomData.miners.slice();
 
             $scope.user_miners.forEach(m => {
