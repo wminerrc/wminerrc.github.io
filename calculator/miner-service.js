@@ -24,7 +24,7 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
         return [JSON.parse(JSON.stringify(miner))].concat(JSON.parse(JSON.stringify(merge_miners)).filter(m => m.filename === miner.filename).sort((a,b) => a.level - b.level));
     };
 
-    this.getAllMinersByFilter = async function(name, rarity, bonus, negotiable, ids, minMinerPower, maxMinerPower) {
+    this.getAllMinersByFilter = async function(name, rarity, bonus, negotiable, ids, minMinerPower, maxMinerPower, width) {
         let miners = JSON.parse(JSON.stringify(basic_miners)).concat(JSON.parse(JSON.stringify(merge_miners)));
 
         if(typeof name === 'string' && name !== '') {
@@ -33,6 +33,10 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
             }else {
                 miners =  miners.filter(m => m.name.en.toLowerCase().includes(name.toLowerCase()))
             }
+        }
+
+        if(typeof width === 'string' && width !== '' && width !== 'all') {
+            miners = miners.filter(m => m.width == width);
         }
 
         if(typeof rarity === 'string' && rarity !== 'all') {

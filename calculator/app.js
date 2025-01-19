@@ -1,6 +1,6 @@
 var app = angular.module('miningApp', ['ui.bootstrap']);
 
-app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', 'FirebaseService', '$sce', async function($scope, CurrencyService, UserMinerService, MinerService, FirebaseService, $sce) {
+app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerService', 'MinerService', 'FirebaseService', '$sce', '$timeout', async function($scope, CurrencyService, UserMinerService, MinerService, FirebaseService, $sce, $timeout) {
     $scope.units = ['GH/s', 'TH/s', 'PH/s', 'EH/s'];
     $scope.networkUnits = ['GH/s', 'TH/s', 'PH/s', 'EH/s', 'ZH/s'];
     let default_form = {
@@ -412,6 +412,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     $scope.allMinerMaxBonusSearch = 100;
     $scope.allMinerMinBonusRange = 0;
     $scope.allMinerMaxBonusRange = 100;
+    $scope.allMinerMinImpact = 0;
     $scope.allMinersRarity = 'all';
     $scope.allMinerPosessionStatus = 'all';
     $scope.allMinerNegotiableStatus = 'all';
@@ -432,9 +433,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
-    $scope.filterUserMiners = async function(search, rarity, bonus, negotiable, minMinerPower, maxMinerPower) {
+    $scope.filterUserMiners = async function(search, rarity, bonus, negotiable, minMinerPower, maxMinerPower, userMinerCells) {
         if($scope.formData.showMiners) {
-            let miners_to_show = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, $scope.user_data.roomData.miners.map(m => m.miner_id), minMinerPower, maxMinerPower);
+            $scope.userMinersCurrentPage = 1;
+            let miners_to_show = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, $scope.user_data.roomData.miners.map(m => m.miner_id), minMinerPower, maxMinerPower, userMinerCells);
             $scope.visible_user_miners = $scope.user_miners.filter(m => miners_to_show.find(ts => ts.miner_id === m.miner_id));
             $scope.$apply();
         }else {
@@ -442,13 +444,20 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         }
     }
 
-    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus, allMinerCollectionId, minMinerPower, maxMinerPower) {
+    $scope.loadWorstMinerImpact = function() {
+       let lowestImpactMiner = $scope.user_miners.filter(m => !m.removed).reduce((lowestImpactMiner, miner) => miner.removeImpactPower < lowestImpactMiner.removeImpactPower ? miner : lowestImpactMiner);
+       let lowestImpactOneCellMiner = $scope.user_miners.filter(m => !m.removed && m.width < 2).reduce((lowestImpactMiner, miner) => miner.removeImpactPower < lowestImpactMiner.removeImpactPower ? miner : lowestImpactMiner);
+       $scope.lowestMinerName = lowestImpactMiner ? `${lowestImpactMiner.name.en} (${lowestImpactMiner.width} células) - Impacto: ${lowestImpactMiner.removeImpactPower}` : '';
+       $scope.lowestImpactOneCellMiner = lowestImpactOneCellMiner ? `${lowestImpactOneCellMiner.name.en} (${lowestImpactOneCellMiner.width} células) - Impacto: ${lowestImpactOneCellMiner.removeImpactPower}` : '';
+    }
+
+    $scope.filterAllMiners = async function(search, rarity, bonus, negotiable, allMinerPosessionStatus, allMinerCollectionId, minMinerPower, maxMinerPower, width, allMinerMinImpact) {
         if($scope.formData.showAllMiners) {
             let ids = [];
             if(allMinerCollectionId && parseInt(allMinerCollectionId) !== -1) {
                 ids = $scope.collections.find(c => c.id === parseInt(allMinerCollectionId))?.miners ?? [];
             }
-            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, ids, minMinerPower, maxMinerPower);
+            let foundMiners = await MinerService.getAllMinersByFilter(search, rarity, bonus, negotiable, ids, minMinerPower, maxMinerPower, width);
             foundMiners.forEach(m => {
                 m.already_have = $scope.user_data.roomData.miners.find(mm => mm.miner_id === m.miner_id);
             });
@@ -457,9 +466,14 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             }else if(allMinerPosessionStatus === 'not_mine') {
                 foundMiners = foundMiners.filter(m => !m.already_have);
             }
+            if(allMinerMinImpact) {
+                foundMiners = foundMiners.filter(m => m.includeImpactPower >= parseInt(allMinerMinImpact))
+            }
             $scope.allMiners = foundMiners;
+            $scope.currentPage = 1;
             $scope.$apply();
         }else {
+            $scope.lowestMinerName = '';
             $scope.allMiners = [];
         }
     }
