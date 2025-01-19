@@ -316,6 +316,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             $scope.formData.unit = bestHashRate.unit;
             $scope.formData.showMiners = false;
             $scope.formData.showRacks = false;
+            $scope.formData.showInventory = false;
             $scope.isLoadedUser = true;
         }catch(err) {
             $scope.playerSearchNoResults = true;
@@ -423,6 +424,10 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     //userMinersFilter
     $scope.userMinersItemsPerPage = 6;
     $scope.userMinersCurrentPage = 1;
+
+    //userInventoryMinersFilter
+    $scope.userInventoryMinersItemsPerPage = 6;
+    $scope.userInventoryMinersCurrentPage = 1;
 
     $scope.keepUser = localStorage.getItem('keep_loaded_user') ? true : false;
 
@@ -546,6 +551,47 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
 
     $scope.dailyBonus = await FirebaseService.getBonusTask();
     
+
+    $scope.loadUserInventory = async function(inventory) {
+
+        try{
+            const quantitiesRegex = /(Quantity\:|Qtd\:)(\s*)(\d*)/g;
+            const minerRegex = /(.*\n)(.*)(\n\nSet)/g;
+            const miners = [];
+            while ((match = minerRegex.exec(inventory)) !== null) {
+                let rarity = match[1];
+                let type = ''; let level = '';
+                if(rarity.toLowerCase().indexOf('rating star') !== -1) {
+                    type = 'old_merge';
+                    level = '';
+                }else {
+                    level = rarity.replace(/\D/g,'').replace('\n','');
+                    level = isNaN(level) || level == '' ? 0 : parseInt(level)
+                }
+                miners.push({
+                    level: level,
+                    name: match[2],
+                    type: type
+                })
+            }
+
+            let qtdIdx = 0;
+            while ((match = quantitiesRegex.exec(inventory)) !== null) {
+                let quantity = match[3];
+                if(isNaN(quantity) || quantity == '') { continue; }
+                miners[qtdIdx].quantity = parseInt(quantity);
+                qtdIdx++;
+                if(qtdIdx === miners.length) {break}
+            }
+            const all_miners = await MinerService.getAllMinersByFilter(); 
+            $scope.visible_user_inventory_miners =  miners.map(m => ({...all_miners.find(m2 => m.name === m2.name.en && (m2.type === m.type || m2.level === m.level)), quantity: m.quantity, rdid: uuidv4()}));
+            $scope.$apply();
+        }catch(err) {
+            alert('Erro ao carregar. Siga as instruções corretamente!');
+            $scope.visible_user_inventory_miners = [];
+        }
+    }
+
     $scope.showStatistics = async function() {
         if($scope.formData.showUserStatistics) {
             $scope.statistics = await FirebaseService.getUserStatistic($scope.user_data);
