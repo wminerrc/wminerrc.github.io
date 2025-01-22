@@ -1,6 +1,7 @@
 import Mustache from "node_modules/mustache"
 import html2canvas from 'html2canvas';
-import event from 'data/event.json';
+
+var event = window.rewards;
 
 function saveAs(uri, filename) {
     var link = document.createElement('a');
