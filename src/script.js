@@ -276,7 +276,7 @@ const template = `
     </div>
     <div id="balao2" class="balao">
         <span class="fechar" onclick="document.getElementById('balao2').style.display = 'none';">X</span>
-        <a href="https://t.me/rollertap_bot?start=1969089985" target="_blank"><p>Acesse o RollerTAP e ganhe tokens RCC!</p></a>
+        <a href="https://t.me/TonHashersBot?start=1969089985" target="_blank"><p>Novo Jogo de mineracao TON! Entre agora mesmo</p></a>
     </div>
     <div id="balao" class="balao">
         <span class="fechar" onclick="document.getElementById('balao').style.display = 'none';">X</span>

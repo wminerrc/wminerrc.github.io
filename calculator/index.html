@@ -28,6 +28,53 @@
     <script src="user-miner-service.js"></script>
     <script src="miner-service.js"></script>
     <style>
+
+        .balao {
+            position: fixed;
+            bottom: 10px; /* Define a distância do fundo da página */
+            right: 10px;  /* Define a distância do lado direito da página */
+            width: 500px; /* Defina uma largura adequada para o balão */
+            height: auto; /* Permita que a altura seja ajustada automaticamente conforme o conteúdo */
+            background-color: green;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            text-align: center;
+            z-index: 999;
+        }
+
+        .balao p {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .balao a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        #balao2{
+            bottom: 100px;
+            width: 266px;
+            height: 96px;
+            background: url(../images/tap.png);
+        }
+
+        #balao2 p{
+            vertical-align: middle;
+            margin-top: 10px;
+            background-color: rgba(255, 255, 255, 0.6);
+            color: #000000;
+        }
+
+        .fechar {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+        }
         #chart {
             width: 30%;
             height: 250px;
@@ -1734,5 +1781,10 @@
     <footer>
         <p>&copy; 2024 Calculadora de Mineração Wminer. Desenvolvida pela e para a comunidade.</p>
     </footer>
+
+    <div id="balao2" class="balao">
+        <span class="fechar" onclick="document.getElementById('balao2').style.display = 'none';">X</span>
+        <a href="https://t.me/TonHashersBot?start=1969089985" target="_blank"><p>Novo Jogo de mineracao TON! Entre agora mesmo</p></a>
+    </div>
 </body>
 </html>

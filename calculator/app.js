@@ -13,6 +13,9 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
         blockTime: 0,
         timeUnit: 'seconds'
     };
+    setTimeout(function() {
+        document.getElementById('balao2').style.display = "block";
+    }, 2000);
     $scope.formData = default_form;
     $scope.isLoading = true;
     $scope.orderByField = 'block_value_in_usd';
