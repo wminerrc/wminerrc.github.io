@@ -6,9 +6,9 @@ servicez.service('MinerService', ['$http', '$q', function($http, $q) {
     merge_miners.forEach(m => m.old_craft_items =  old_merge_miners.find(om => om.miner_id === m.miner_id)?.craft_items )
     basic_miners.forEach(m => m.recipe_cost = 0);
     basic_miners.forEach(m => m.old_recipe_cost = 0);
-    merge_miners.forEach(m => m.recipe_cost = m.craft_items.filter(i => i.component_type === 'mutation_components').map(r => window.components.find(c => c.id === r._id).avg_price * r.count ));
+    merge_miners.forEach(m => m.recipe_cost = m.craft_items.filter(i => i.component_type === 'mutation_components').map(r => (window.components.find(c => c.id === r._id)?.avg_price ?? 0) * r.count ));
     merge_miners.forEach(m => m.recipe_cost = parseFloat((m.recipe_cost / 1000000).toFixed(2)));
-    merge_miners.forEach(m => m.old_recipe_cost = m.old_craft_items?.filter(i => i.component_type === 'mutation_components').map(r => window.components.find(c => c.id === r._id).avg_price * r.count ));
+    merge_miners.forEach(m => m.old_recipe_cost = m.old_craft_items?.filter(i => i.component_type === 'mutation_components').map(r => (window.components.find(c => c.id === r._id)?.avg_price ?? 0) * r.count ));
     merge_miners.forEach(m => m.old_recipe_cost = parseFloat((m.old_recipe_cost / 1000000).toFixed(2)));
     merge_miners.forEach(m => m.recipe_cost = m.recipe_cost || 0);
     merge_miners.forEach(m => m.old_recipe_cost = m.old_recipe_cost || 0);
