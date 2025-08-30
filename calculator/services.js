@@ -123,6 +123,71 @@ service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', functi
         }
     };
 
+    this.getLeagues = function() {
+        return [
+            {
+                "id": "68af01ce48490927df92d687",
+                "name": "Bronze I" 
+            },
+            {
+                "id": "68af01ce48490927df92d686",
+                "name": "Bronze II" 
+            },
+            {
+                "id": "68af01ce48490927df92d685",
+                "name": "Bronze III" 
+            },
+            {
+                "id": "68af01ce48490927df92d684",
+                "name": "Silver I" 
+            },
+            {
+                "id": "68af01ce48490927df92d683",
+                "name": "Silver II" 
+            },
+            {
+                "id": "68af01ce48490927df92d682",
+                "name": "Silver III" 
+            },
+            {
+                "id": "68af01ce48490927df92d681",
+                "name": "Gold I" 
+            },
+            {
+                "id": "68af01ce48490927df92d680",
+                "name": "Gold II" 
+            },
+            {
+                "id": "68af01ce48490927df92d67f",
+                "name": "Gold III" 
+            },
+            {
+                "id": "68af01ce48490927df92d67e",
+                "name": "Platinum I" 
+            },
+            {
+                "id": "68af01ce48490927df92d67d",
+                "name": "Platinum II" 
+            },
+            {
+                "id": "68af01ce48490927df92d67c",
+                "name": "Platinum III" 
+            },
+            {
+                "id": "68af01ce48490927df92d67b",
+                "name": "Diamond I" 
+            },
+            {
+                "id": "68af01ce48490927df92d67a",
+                "name": "Diamond II" 
+            },
+            {
+                "id": "68af01ce48490927df92d679",
+                "name": "Diamond III" 
+            }
+        ];
+    }
+
     
     var getCurrenciesPrices = async function() {
         const cache_key = 'exchange_history';
@@ -194,7 +259,17 @@ service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', functi
         return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
                 const result = response.data;
-                return result.data[0].value;
+                return result.data[0]?.value ?? 0;
+            }
+        });
+    };
+
+    var getBlockSizeByCurrencyAndLeague = async function(currency, leagueId) {
+        const search = `https://rollercoin.com/api/league/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=block_reward&leagueId=${leagueId}`;
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
+            if (response.status === 200) { 
+                const result = response.data;
+                return result.data[0]?.value ?? 0;
             }
         });
     };
@@ -204,23 +279,64 @@ service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', functi
         return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
                 const result = response.data;
-                return result.data[0].value;
+                return result.data[0]?.value ?? 0;
             }
         });
     };
+
+    var getNetworkPowerByCurrencyAndLeague = async function(currency, leagueId) {
+        const search = `https://rollercoin.com/api/league/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=total_power&leagueId=${leagueId}`;
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
+            if (response.status === 200) { 
+                const result = response.data;
+                return result.data[0]?.value ?? 0;
+            }
+        });
+    }; 
 
     var getBlockTimeByCurrency = async function(currency) {
         const search = `https://rollercoin.com/api/mining/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=duration`;
         return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
             if (response.status === 200) { 
                 const result = response.data;
-                return result.data[0].value;
+                return result.data[0]?.value ?? 0;
+            }
+        });
+    };
+
+    var getBlockTimeByCurrencyAndLeague = async function(currency, leagueId) {
+        const search = `https://rollercoin.com/api/league/network-info-by-day?from=${current_date}&to=${current_date}&currency=${currency}&groupBy=duration&leagueId=${leagueId}`;
+        return $http.get(`https://morning-thunder-0ce3.wminerrc.workers.dev/?${encodeURIComponent(search)}`).then(response => {
+            if (response.status === 200) { 
+                const result = response.data;
+                return result.data[0]?.value ?? 0;
             }
         });
     };
     
     this.getCurrencies = getCurrencies;
     this.getCurrenciesPrices = getCurrenciesPrices;
+
+    this.getDetailedCurrenciesByLeague = async function(league) {
+        const cache_key = `rc_network_data_${league}`;
+        var cached = getCache(cache_key);
+        if(cached) return cached;
+        const currencies = await getCurrencies();
+        const detailedCurrencies = [];
+        for (const currency of currencies) {
+            var blockSize = await getBlockSizeByCurrencyAndLeague(currency.balance_key, league);
+            var networkPower = await getNetworkPowerByCurrencyAndLeague(currency.balance_key, league);
+            var blockTime = await getBlockTimeByCurrencyAndLeague(currency.balance_key, league);
+            currency.blockSize = (blockSize/currency.divider) / currency.to_small;
+            currency.networkPower = networkPower;
+            currency.blockTime = blockTime;
+            currency.networkUnit = 'GH/s';
+            detailedCurrencies.push(currency);
+        }
+        setCache(detailedCurrencies, cache_key);
+        FirebaseService.persistNetworkPower(detailedCurrencies);
+        return detailedCurrencies;
+    };
 
     this.getDetailedCurrencies = async function() {
         const cache_key = 'rc_network_data';
@@ -229,9 +345,9 @@ service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', functi
         const currencies = await getCurrencies();
         const detailedCurrencies = [];
         for (const currency of currencies) {
-            var blockSize = await getBlockSizeByCurrency(currency.balance_key);
-            var networkPower = await getNetworkPowerByCurrency(currency.balance_key);
-            var blockTime = await getBlockTimeByCurrency(currency.balance_key);
+            var blockSize = await getBlockSizeByCurrencyAndLeague(currency.balance_key, '68af01ce48490927df92d67b');
+            var networkPower = await getNetworkPowerByCurrencyAndLeague(currency.balance_key, '68af01ce48490927df92d67b');
+            var blockTime = await getBlockTimeByCurrencyAndLeague(currency.balance_key, '68af01ce48490927df92d67b');
             currency.blockSize = (blockSize/currency.divider) / currency.to_small;
             currency.networkPower = networkPower;
             currency.blockTime = blockTime;

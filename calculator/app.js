@@ -190,6 +190,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     ];
 
     let loaded_user = getUrlParamValue('user');
+    let loaded_league = getUrlParamValue('league');
     loaded_user = loaded_user || localStorage.getItem('keep_loaded_user');
 
     let loaded_miners = getUrlParamValue('miners');
@@ -321,6 +322,7 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             $scope.formData.showRacks = false;
             $scope.formData.showInventory = false;
             $scope.isLoadedUser = true;
+            loaded_league = $scope.user_data?.league_id;
         }catch(err) {
             $scope.playerSearchNoResults = true;
         }
@@ -877,8 +879,11 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
     }
 
     $scope.getCurrenciesSum = getCurrenciesSum;
-
-    $scope.currencies = await CurrencyService.getDetailedCurrencies();
+    $scope.leagues = CurrencyService.getLeagues();
+    $scope.loaded_league = loaded_league || $scope.leagues[0].id;
+    $scope.formData.league = $scope.leagues.filter(l => l.id == $scope.loaded_league)[0] ?? $scope.leagues[0];
+    $scope.loaded_league = $scope.leagues.filter(l => l.id == $scope.loaded_league)[0].id ?? $scope.leagues[0].id;
+    $scope.currencies = await CurrencyService.getDetailedCurrenciesByLeague($scope.loaded_league);
     $scope.currencies?.forEach(c => {
         c.block_value_in_brl = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'brl');
         c.block_value_in_usd = c.in_game_only ? 0 : exchangeCoin(c.blockSize, c.name, 'usd');
@@ -942,6 +947,12 @@ app.controller('MiningController', ['$scope', 'CurrencyService', 'UserMinerServi
             localStorage.clear();
             location.reload();  
         }
+    }
+
+    $scope.updateLeagueDetails = async function() {
+        const selectedLeague = $scope.formData.league;
+        let  new_url = window.location.pathname+"?league=" + selectedLeague.id;
+        window.location.href = new_url;
     }
 
     $scope.updateCurrencyDetails = function() {

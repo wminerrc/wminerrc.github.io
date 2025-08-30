@@ -303,6 +303,12 @@
             <div class="col-md-4">
                 <form name="miningForm">
                     <div class="form-group">
+                        <label for="currency">Liga</label>
+                        <select id="currency" class="form-control" ng-disabled="isLoadedUser" ng-model="formData.league" ng-options="league.name for league in leagues" ng-change="updateLeagueDetails()">
+                            <option value="">Selecione uma liga</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="currency">Moeda a Minerar</label>
                         <select id="currency" class="form-control" ng-model="formData.currency" ng-options="currency.name for currency in currencies" ng-change="updateCurrencyDetails()">
                             <option value="">Selecione uma moeda</option>

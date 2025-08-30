@@ -14,6 +14,7 @@ service.service('UserMinerService', ['$http', '$q', 'FirebaseService', function(
         try {
             const user = await this.getUserByNick(nick);
             user.powerData = await this.getUserPowerDataById(user.avatar_id);
+            user.powerData.total = user.powerData.current_power;
             user.roomData = await this.getUserRoomDataById(user.avatar_id);
 
             user.roomData.miners.forEach(m => {
