@@ -221,6 +221,9 @@ service_app.service('CurrencyService', ['$http', '$q', 'FirebaseService', functi
                 },
                 {
                     name: 'XRP', coingecko_id : 'ripple'
+                },
+                {
+                    name: 'ALGO', coingecko_id: 'algorand'
                 }
             ];
 
